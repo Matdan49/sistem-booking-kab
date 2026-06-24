@@ -24,10 +24,32 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
+        // 1. Validasi input dropdown role daripada borang login
+        $request->validate([
+            'role' => 'required|string|in:student,non-student,pejabat,pengetua',
+        ]);
+
+        // Proses pengesahan emel dan kata laluan asal Laravel Breeze
         $request->authenticate();
 
+        // 2. Semak padanan peranan: Adakah role pilihan sepadan dengan database?
+        if (Auth::user()->role !== $request->role) {
+            
+            // Jika salah pilih, log keluar pengguna serta-merta
+            Auth::guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            // Hantar pengguna semula ke skrin login bersama mesej ralat merah
+            return redirect()->route('login')->withErrors([
+                'role' => 'Peranan yang dipilih tidak sepadan dengan akaun anda!'
+            ])->withInput($request->only('email', 'remember'));
+        }
+
+        // 3. Sesi diperbaharui jika padanan peranan berjaya
         $request->session()->regenerate();
 
+        // 4. Hantar ke dashboard (Paparan automatik berubah mengikut peranan hasil filter Blade)
         return redirect()->intended(route('dashboard', absolute: false));
     }
 
