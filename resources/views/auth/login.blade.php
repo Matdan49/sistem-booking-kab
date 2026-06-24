@@ -94,23 +94,23 @@
                     
                     <div class="grid grid-cols-2 gap-3 text-center">
                         <a href="{{ route('login.quick', 'student') }}" 
-                           class="px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold rounded-xl border border-blue-200 transition duration-150 block">
-                           👨‍🎓 Student
+                        class="px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold rounded-xl border border-blue-200 transition duration-150 block">
+                        👨‍🎓 Student
                         </a>
 
                         <a href="{{ route('login.quick', 'non-student') }}" 
-                           class="px-4 py-2 bg-teal-50 hover:bg-teal-100 text-teal-700 text-xs font-bold rounded-xl border border-teal-200 transition duration-150 block">
-                           👤 Non-Student
+                        class="px-4 py-2 bg-teal-50 hover:bg-teal-100 text-teal-700 text-xs font-bold rounded-xl border border-teal-200 transition duration-150 block">
+                        👤 Non-Student
                         </a>
 
                         <a href="{{ route('login.quick', 'pejabat') }}" 
-                           class="px-4 py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 text-xs font-bold rounded-xl border border-amber-200 transition duration-150 block">
-                           🏢 Pejabat
+                        class="px-4 py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 text-xs font-bold rounded-xl border border-amber-200 transition duration-150 block">
+                        🏢 Pejabat
                         </a>
 
                         <a href="{{ route('login.quick', 'pengetua') }}" 
-                           class="px-4 py-2 bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-bold rounded-xl border border-purple-200 transition duration-150 block">
-                           🎓 Pengetua
+                        class="px-4 py-2 bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-bold rounded-xl border border-purple-200 transition duration-150 block">
+                        🎓 Pengetua
                         </a>
                     </div>
                 </div>
