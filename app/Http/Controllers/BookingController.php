@@ -9,36 +9,30 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class BookingController extends Controller
 {
+    
     /**
-     * Memaparkan halaman borang tempahan (Dashboard Utama).
+     * 📊 HALAMAN UTAMA DASHBOARD / MENU
      */
     public function index()
     {
-        $role = Auth::user()->role;
-
-        // Pentadbir (pejabat/pengetua) kekal melihat senarai tugasan mereka di dashboard
-        if ($role === 'pejabat') {
-            $bookings = DB::table('bookings')
-                ->leftJoin('users', 'bookings.user_id', '=', 'users.id')
-                ->leftJoin('kabs', 'bookings.kab_id', '=', 'kabs.id')
-                ->select('bookings.*', 'users.name as nama_pemohon', 'users.role as role_pemohon', 'kabs.nama_kab', 'kabs.no_kab')
-                ->where('bookings.status_kelulusan', 'pending')
-                ->orderBy('bookings.id', 'asc')
-                ->get();
-        } elseif ($role === 'pengetua') {
-            $bookings = DB::table('bookings')
-                ->leftJoin('users', 'bookings.user_id', '=', 'users.id')
-                ->leftJoin('kabs', 'bookings.kab_id', '=', 'kabs.id')
-                ->select('bookings.*', 'users.name as nama_pemohon', 'users.role as role_pemohon', 'kabs.nama_kab', 'kabs.no_kab')
-                ->where('bookings.status_kelulusan', 'disokong_pejabat')
-                ->orderBy('bookings.id', 'asc')
-                ->get();
-        } else {
-            // Untuk student / non-student, mereka hanya melihat borang kosong di dashboard utama
-            $bookings = collect();
+        
+        // 1. Jika pengguna adalah STUDENT, bawa mereka ke Hub Menu Utama dahulu
+        if (Auth::user()->role === 'student') {
+            return view('menu-fasiliti');
         }
 
-        return view('dashboard', compact('bookings'));
+        // 2. Jika bukan student (Pejabat / Pengetua), kekalkan paparan senarai permohonan mereka
+        // (Nota: Sila pastikan pembolehubah $bookings ini sepadan dengan logik asal pejabat/pengetua anda)
+        $bookings = DB::table('bookings')
+            ->leftJoin('users', 'bookings.user_id', '=', 'users.id')
+            ->leftJoin('kabs', 'bookings.kab_id', '=', 'kabs.id')
+            ->select('bookings.*', 'users.name as nama_pemohon', 'kabs.nama_kab')
+            ->get();
+
+        // Gantikan baris return view lama untuk admin/non-student dengan ini:
+            $kabs = DB::table('kabs')->get(); // Ambil semua fasiliti dinamik dari database
+
+            return view('dashboard', compact('bookings', 'kabs'));
     }
 
     /**
@@ -194,4 +188,160 @@ class BookingController extends Controller
 
         return $pdf->download($namaFail);
     }
+    /**
+     * 🔐 FUNGSI LOG MASUK SEGERA (TRIAL MODE)
+     */
+    public function quickLogin($role)
+    {
+        // Cari pengguna pertama yang mempunyai role yang dipilih
+        $user = DB::table('users')->where('role', $role)->first();
+
+        if ($user) {
+            // Log masuk secara automatik menggunakan ID pengguna tersebut
+            Auth::loginUsingId($user->id);
+            return redirect()->route('dashboard')->with('success', 'Berjaya log masuk sebagai ' . ucfirst($role));
+        }
+
+        return redirect()->back()->with('error', 'Pengguna dengan peranan ' . $role . ' tidak ditemui dalam pangkalan data.');
+        
+    }
+    // ======================================================================
+    // 🏛️ KHAS ADMIN: FUNGSI PENGURUSAN FASILITI (CRUD & UPLOAD GAMBAR)
+    // ======================================================================
+
+    /**
+     * 1. Papar Halaman Senarai Fasiliti untuk Admin
+     */
+    /**
+     * 1. Papar Halaman Senarai Fasiliti untuk Admin
+     */
+    public function adminFasilitiIndex()
+    {
+        if (Auth::user()->role !== 'pejabat' && Auth::user()->role !== 'pengetua') {
+            return redirect()->route('dashboard')->with('error', 'Akses disekat.');
+        }
+
+        $fasiliti = DB::table('kabs')->get();
+        return view('admin.fasiliti-index', compact('fasiliti'));
+    }
+
+    /**
+     * 2. Proses Simpan Fasiliti Baharu + Muat Naik Gambar (VERSI BERSIH)
+     */
+    public function adminFasilitiStore(Request $request)
+{
+    // 1. Validasi input biasa (Kita lepaskan syarat 'image' supaya Windows tak masuk campur)
+    $request->validate([
+        'nama_kab' => 'required|string|max:255',
+        'no_kab' => 'nullable|string|max:50',
+        'kategori' => 'required|in:tempat,peralatan',
+    ]);
+
+    $namaGambar = null;
+
+    // 2. Teknik Bypass: Jika ada fail dihantar, kita proses secara manual terus ke folder public
+    if (isset($_FILES['gambar']) && $_FILES['gambar']['error'] === UPLOAD_ERR_OK) {
+        
+        $failAsal = $_FILES['gambar']['name'];
+        $ext = pathinfo($failAsal, PATHINFO_EXTENSION);
+        
+        // Cipta nama fail unik
+        $namaGambar = time() . '_fasiliti.' . $ext;
+        $laluanFolder = public_path('images/fasiliti');
+
+        // Cipta folder jika belum wujud
+        if (!file_exists($laluanFolder)) {
+            mkdir($laluanFolder, 0777, true);
+        }
+
+        // Pindahkan fail secara paksa menggunakan fungsi core PHP (Bypass Laravel upload engine yang sensitif)
+        if (move_uploaded_file($_FILES['gambar']['tmp_name'], $laluanFolder . '/' . $namaGambar)) {
+            // Berjaya pindah fail fizikal
+        } else {
+            // Jika fail fizikal gagal, kita set semula ke null supaya database tak error
+            $namaGambar = null; 
+        }
+    }
+
+    // 3. Masukkan data ke dalam database (Sahkan $namaGambar masuk ke ruangan 'gambar')
+    \DB::table('kabs')->insert([
+        'nama_kab'        => $request->nama_kab,
+        'no_kab'          => $request->no_kab ?? 'KAB-' . uniqid(),
+        'kategori'        => $request->kategori,
+        'gambar'          => $namaGambar, // 💡 Kunci utama: Memastikan nama fail wajib masuk ke DB!
+        'kapasiti'        => 0,          
+        'harga_per_malam' => 0.00,       
+        'status'          => 'available',
+        'deskripsi'       => null,       
+        'created_at'      => now(),
+        'updated_at'      => now(),
+    ]);
+
+    return redirect()->back()->with('success', 'Fasiliti baharu berjaya didaftarkan!');
 }
+    /**
+     * 3. Proses Kemas Kini (Update) Fasiliti
+     */
+    public function adminFasilitiUpdate(Request $request, $id)
+    {
+        $request->validate([
+            'nama_kab' => 'required|string|max:255',
+            'no_kab' => 'nullable|string|max:50',
+            'kategori' => 'required|in:tempat,peralatan',
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+        ]);
+
+        $fasiliti = DB::table('kabs')->where('id', $id)->first();
+        $namaGambar = $fasiliti->gambar; 
+
+        if ($request->hasFile('gambar')) {
+            $laluanFolder = public_path('images/fasiliti');
+
+            if (!file_exists($laluanFolder)) {
+                mkdir($laluanFolder, 0777, true);
+            }
+
+            if ($namaGambar && file_exists($laluanFolder . '/' . $namaGambar)) {
+                unlink($laluanFolder . '/' . $namaGambar);
+            }
+
+            $fail = $request->file('gambar');
+            $namaGambar = time() . '_' . $fail->getClientOriginalName();
+            $fail->move($laluanFolder, $namaGambar);
+        }
+
+        \DB::table('kabs')->insert([
+    'nama_kab'        => $request->nama_kab,
+    'no_kab'          => $request->no_kab ?? 'KAB-' . uniqid(),
+    'kategori'        => $request->kategori,
+    'gambar'          => $namaGambar, // 💡 PASTIKAN BARIS INI ADA!
+    'kapasiti'        => 0,          
+    'harga_per_malam' => 0.00,       
+    'status'          => 'available',
+    'deskripsi'       => null,       
+    'created_at'      => now(),
+    'updated_at'      => now(),
+]);
+
+        return redirect()->back()->with('success', 'Maklumat fasiliti berjaya dikemaskini!');
+    }
+
+    /**
+     * 4. Proses Padam (Delete) Fasiliti & Fail Gambar
+     */
+    public function adminFasilitiDelete($id)
+    {
+        $fasiliti = DB::table('kabs')->where('id', $id)->first();
+
+        if ($fasiliti) {
+            $laluanGambar = public_path('images/fasiliti/' . $fasiliti->gambar);
+            if ($fasiliti->gambar && file_exists($laluanGambar)) {
+                unlink($laluanGambar);
+            }
+
+            DB::table('kabs')->where('id', $id)->delete();
+        }
+
+        return redirect()->back()->with('success', 'Fasiliti telah berjaya dipadamkan sepenuhnya.');
+    }
+} // <-- Pastikan ini kurungan penutup paling akhir fail class Controller

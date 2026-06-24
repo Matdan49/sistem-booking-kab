@@ -1,15 +1,24 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Dashboard Tempahan Fasiliti Kolej KAB') }}
-        </h2>
+        <div class="flex justify-between items-center">
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                {{ __('Dashboard Pengurusan Tempahan') }}
+            </h2>
+            
+            {{-- BUTANG URUS FASILITI KHAS UNTUK ADMIN (PEJABAT / PENGETUA) --}}
+            @if(Auth::user()->role === 'pejabat' || Auth::user()->role === 'pengetua')
+                <a href="{{ route('admin.fasiliti.index') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold rounded-xl shadow transition duration-150 transform hover:-translate-y-0.5">
+                    🏛️ Urus Fasiliti & Gambar
+                </a>
+            @endif
+        </div>
     </x-slot>
 
     {{-- Mesej Berjaya / Ralat --}}
     @if(session('success'))
         <div class="max-w-6xl mx-auto mt-6 px-4 sm:px-6 lg:px-8">
             <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-xl relative" role="alert">
-                <span class="block sm:inline">{{ session('success') }}</span>
+                <span class="block sm:inline">🎉 {{ session('success') }}</span>
             </div>
         </div>
     @endif
@@ -17,7 +26,7 @@
     @if(session('error'))
         <div class="max-w-6xl mx-auto mt-6 px-4 sm:px-6 lg:px-8">
             <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl relative" role="alert">
-                <span class="block sm:inline">{{ session('error') }}</span>
+                <span class="block sm:inline">🚨 {{ session('error') }}</span>
             </div>
         </div>
     @endif
@@ -50,35 +59,38 @@
                     <form action="{{ route('bookings.store') }}" method="POST" class="p-6 sm:p-8 space-y-6">
                         @csrf
 
+                        {{-- SELECTIONS FASILITI DINAMIK DARI DATABASE --}}
                         <div>
-                            <label for="kab_id" class="block text-sm font-semibold text-gray-700 mb-2">Pilih Fasiliti</label>
+                            <label for="kab_id" class="block text-sm font-semibold text-gray-700 mb-2">Pilih Fasiliti / Peralatan</label>
                             <select id="kab_id" name="kab_id" class="w-full px-4 py-3 rounded-xl border-gray-200 bg-gray-50 text-gray-800 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition duration-200" required>
-                                <option value="">-- Sila Pilih Fasiliti --</option>
-                                <option value="1">Dewan Besar KAB (ID: 1)</option>
-                                <option value="2">Bilik Seminar Utama (ID: 2)</option>
-                                <option value="3">Gelanggang Futsal (ID: 3)</option>
+                                <option value="">-- Sila Pilih Fasiliti Semasa --</option>
+                                @foreach($kabs as $fasiliti)
+                                    <option value="{{ $fasiliti->id }}">
+                                        [{{ strtoupper($fasiliti->kategori) }}] {{ $fasiliti->nama_kab }} {{ $fasiliti->no_kab ? '('.$fasiliti->no_kab.')' : '' }}
+                                    </option>
+                                @endforeach
                             </select>
                         </div>
 
                         <div>
-                            <label_for="tarikh_guna" class="block text-sm font-semibold text-gray-700 mb-2">Tarikh Guna</label>
+                            <label for="tarikh_guna" class="block text-sm font-semibold text-gray-700 mb-2">Tarikh Guna</label>
                             <input type="date" id="tarikh_guna" name="tarikh_guna" class="w-full px-4 py-3 rounded-xl border-gray-200 bg-gray-50 text-gray-800 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition duration-200" required>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label_for="masa_mula" class="block text-sm font-semibold text-gray-700 mb-2">Masa Mula</label>
+                                <label for="masa_mula" class="block text-sm font-semibold text-gray-700 mb-2">Masa Mula</label>
                                 <input type="time" id="masa_mula" name="masa_mula" class="w-full px-4 py-3 rounded-xl border-gray-200 bg-gray-50 text-gray-800 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition duration-200" required>
                             </div>
 
                             <div>
-                                <label_for="masa_tamat" class="block text-sm font-semibold text-gray-700 mb-2">Masa Tamat</label>
+                                <label for="masa_tamat" class="block text-sm font-semibold text-gray-700 mb-2">Masa Tamat</label>
                                 <input type="time" id="masa_tamat" name="masa_tamat" class="w-full px-4 py-3 rounded-xl border-gray-200 bg-gray-50 text-gray-800 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition duration-200" required>
                             </div>
                         </div>
 
                         <div>
-                            <label_for="tujuan_tempahan" class="block text-sm font-semibold text-gray-700 mb-2">Tujuan Tempahan / Nama Program</label>
+                            <label for="tujuan_tempahan" class="block text-sm font-semibold text-gray-700 mb-2">Tujuan Tempahan / Nama Program</label>
                             <textarea id="tujuan_tempahan" name="tujuan_tempahan" rows="4" placeholder="Contoh: Mesyuarat Ahli Jawatankuasa MEP / Aktiviti Staf..." class="w-full px-4 py-3 rounded-xl border-gray-200 bg-gray-50 text-gray-800 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition duration-200" required></textarea>
                         </div>
 
