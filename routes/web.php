@@ -40,6 +40,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     // 7. Proses Tolak Permohonan (Ditukar ke 'tolak' sepadan dengan nama fungsi dalam BookingController)
     Route::post('/bookings/{id}/tolak', [BookingController::class, 'tolak'])->name('bookings.tolak');
+
+    // 8. Cetak Surat Kelulusan Format PDF
+    Route::get('/bookings/{id}/pdf', [BookingController::class, 'downloadPDF'])->name('bookings.pdf');
 });
 
 require __DIR__.'/auth.php';

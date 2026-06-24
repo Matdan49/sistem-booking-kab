@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class BookingController extends Controller
 {
@@ -158,24 +159,39 @@ class BookingController extends Controller
         return redirect()->route('dashboard')->with('success', 'Permohonan tempahan telah ditolak.');
     }
 
-    /**
-     * 🚀 FUNGSI TAMBAHAN: Log Masuk Segera untuk Sesi Saringan / Trial.
+   /**
+     * 🚀 FUNGSI CETAK PDF (VERSI DIKEMASKINI): Menjana Surat Kelulusan Rasmi Kolej.
      */
-    public function quickLogin($role)
+    public function downloadPDF($id)
     {
-        // Mencari akaun pengguna terawal berdasarkan peranan (role) dalam jadual users
-        $user = DB::table('users')->where('role', $role)->first();
+        // 1. Tarik data terus dari table bookings berdasarkan ID
+        $booking = DB::table('bookings')->where('id', $id)->first();
 
-        if ($user) {
-            // Memaksa sistem sesi Laravel log masuk menggunakan ID entiti tersebut
-            Auth::loginUsingId($user->id);
-            
-            return redirect()->route('dashboard')->with('success', 'Berjaya log masuk sebagai ' . ucfirst($role) . ' (Mod Trial).');
+        // 2. Keselamatan: Pastikan data wujud
+        if (!$booking) {
+            return redirect()->route('dashboard')->with('error', 'Rekod tempahan tidak ditemui.');
         }
 
-        // Peringatan sekiranya data mock / user peranan tersebut tiada dalam pangkalan data
-        return redirect()->route('login')->withErrors([
-            'email' => "Akaun bagi peranan '$role' belum wujud di dalam pangkalan data. Sila daftar akaun baru sebagai '$role' terlebih dahulu."
-        ]);
+        // 3. Tarik nama pemohon secara manual untuk elakkan ralat Join
+        $user = DB::table('users')->where('id', $booking->user_id)->first();
+        $booking->nama_pemohon = $user ? $user->name : 'Nama Tidak Diketahui';
+        $booking->role_pemohon = $user ? $user->role : 'student';
+
+        // 4. Tarik nama fasiliti secara manual dari table kabs
+        $kab = DB::table('kabs')->where('id', $booking->kab_id)->first();
+        $booking->nama_kab = $kab ? $kab->nama_kab : 'Fasiliti ID: ' . $booking->kab_id;
+
+        // 5. SEMAKAN KESELAMATAN: Pastikan data dihantar (Jika masih kosong, ia akan sekat di sini)
+        if (empty($booking->tarikh_guna)) {
+            return "Ralat: Data tempahan didapati kosong di dalam pangkalan data.";
+        }
+
+        // 6. Jana PDF berpandukan fail reka bentuk surat
+        $pdf = Pdf::loadView('pdf.surat-kelulusan', compact('booking'));
+        
+        // 7. Set nama fail muat turun
+        $namaFail = 'Surat_Kelulusan_KAB_' . $booking->id . '.pdf';
+
+        return $pdf->download($namaFail);
     }
 }

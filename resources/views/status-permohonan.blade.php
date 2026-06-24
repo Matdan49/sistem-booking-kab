@@ -46,7 +46,14 @@
                                         @elseif($booking->status_kelulusan === 'disokong_pejabat')
                                             <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold">Disokong Pejabat</span>
                                         @elseif($booking->status_kelulusan === 'lulus_muktamad')
-                                            <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold">Lulus Muktamad</span>
+                                            <div class="flex flex-col items-start gap-2">
+                                                <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold">Lulus Muktamad</span>
+                                                
+                                                {{-- 🖨️ BUTANG CETAK SURAT PDF --}}
+                                                <a href="{{ route('bookings.pdf', $booking->id) }}" class="inline-flex items-center gap-1 px-2.5 py-1 bg-red-600 hover:bg-red-700 text-white text-[11px] font-bold rounded-lg shadow-sm transition duration-150">
+                                                    📄 Cetak Surat PDF
+                                                </a>
+                                            </div>
                                         @elseif($booking->status_kelulusan === 'ditolak_pejabat')
                                             <span class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-xs font-semibold">Ditolak Pejabat</span>
                                         @elseif($booking->status_kelulusan === 'ditolak_pengetua')
