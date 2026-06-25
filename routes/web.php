@@ -54,6 +54,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/admin/fasiliti/store', [BookingController::class, 'adminFasilitiStore'])->name('admin.fasiliti.store');
     Route::post('/admin/fasiliti/{id}/update', [BookingController::class, 'adminFasilitiUpdate'])->name('admin.fasiliti.update');
     Route::delete('/admin/fasiliti/{id}/delete', [BookingController::class, 'adminFasilitiDelete'])->name('admin.fasiliti.delete');
-});
+
+    // 🌿 Kekalkan nama asal 'fasiliti.menu' supaya tiada fail lain yang error
+Route::get('/fasiliti', function () { return view('menu-fasiliti'); })->name('fasiliti.menu');
+Route::get('/fasiliti/tempat', function () { return view('menu-tempat'); })->name('fasiliti.tempat');
+Route::get('/fasiliti/peralatan', function () { return view('menu-peralatan'); })->name('fasiliti.peralatan');
+
+// 📝 LALUAN BAHARU: Halaman Borang Tempahan Terasing
+Route::get('/bookings/create', [BookingController::class, 'create'])->name('bookings.create');
+    });
 
 require __DIR__.'/auth.php';
