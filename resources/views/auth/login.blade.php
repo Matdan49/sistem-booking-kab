@@ -87,6 +87,16 @@
                 <button type="submit" class="w-full py-3 bg-gradient-to-r from-red-600 to-amber-500 hover:from-red-700 hover:to-amber-600 text-white rounded-full font-bold shadow-lg transition transform hover:-translate-y-0.5 mt-2">
                     Sign In
                 </button>
+
+                {{-- 🚀 PAUTAN KE MUKA SURAT REGISTER DISELITKAN DI SINI 🚀 --}}
+                <div class="mt-4 text-center">
+                    <p class="text-sm text-gray-600">
+                        Belum mendaftar akaun? 
+                        <a href="{{ route('register') }}" class="font-bold text-blue-600 hover:text-blue-800 hover:underline transition duration-200">
+                            Daftar di sini
+                        </a>
+                    </p>
+                </div>
             </form>
 
             {{-- Pintasan Ujian WBL --}}
