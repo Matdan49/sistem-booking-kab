@@ -17,7 +17,7 @@
     {{-- Lapisan Biru Korporat myKAB --}}
     <div class="absolute inset-0 bg-gradient-to-r from-blue-950/80 via-indigo-900/70 to-blue-800/40 -z-10"></div>
 
-    {{-- Navigasi Atas (Diubah supaya responsif) --}}
+    {{-- Navigasi Atas --}}
     <nav class="absolute top-0 left-0 right-0 z-20 p-4 sm:p-6 flex justify-center md:justify-between items-center text-white">
         <div class="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-wider flex items-center">
             <span id="typewriter-text"></span>
@@ -32,13 +32,12 @@
         </div>
     </nav>
 
-    {{-- 🌟 KONTEN UTAMA: Ditambah justify-center supaya sentiasa duduk tengah --}}
+    {{-- Konten Utama --}}
     <div class="relative z-10 flex min-h-screen items-center justify-center px-4 sm:px-6 lg:px-8">
         
-        {{-- Kotak Login: max-w-md supaya tak terlalu sempit --}}
         <div class="w-full max-w-sm sm:max-w-md bg-white rounded-[2rem] shadow-2xl p-6 sm:p-8 text-center border-t-4 border-red-600 mt-16 md:mt-0">
             
-            {{-- Ruangan Logo myKAB (Saiz logo mengecil sikit di skrin phone) --}}
+            {{-- Ruangan Logo myKAB --}}
             <div class="flex justify-center -mt-10 sm:-mt-12 -mb-4">
                 <img src="{{ asset('images/logo_mykab.png') }}" alt="Logo myKAB" class="h-28 sm:h-36 w-auto object-contain hover:scale-110 transition transform duration-300">
             </div>
@@ -49,6 +48,13 @@
             @if (session('error'))
                 <div class="text-red-600 text-xs font-bold mb-4 bg-red-50 p-2 rounded-lg border border-red-100">
                     {{ session('error') }}
+                </div>
+            @endif
+
+            {{-- Mesej Status (Contoh: Berjaya reset password) --}}
+            @if (session('status'))
+                <div class="mb-4 font-medium text-xs text-green-700 bg-green-50 p-2 rounded-lg border border-green-200">
+                    {{ session('status') }}
                 </div>
             @endif
 
@@ -73,6 +79,13 @@
                         class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-full text-sm focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-200 transition outline-none text-gray-700">
                 </div>
 
+                {{-- 🚀 PAUTAN LUPA KATA LALUAN 🚀 --}}
+                <div class="flex justify-end -mt-2 mb-2 pr-2">
+                    <a href="{{ route('password.request') }}" class="text-xs font-bold text-blue-600 hover:text-blue-800 hover:underline transition duration-200">
+                        Lupa Kata Laluan?
+                    </a>
+                </div>
+
                 {{-- Pilihan Peranan --}}
                 <div>
                     <select id="role" name="role" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-full text-sm text-gray-600 focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-200 transition text-center appearance-none outline-none font-medium">
@@ -88,7 +101,7 @@
                     Sign In
                 </button>
 
-                {{-- 🚀 PAUTAN KE MUKA SURAT REGISTER DISELITKAN DI SINI 🚀 --}}
+                {{-- Pautan Daftar --}}
                 <div class="mt-4 text-center">
                     <p class="text-sm text-gray-600">
                         Belum mendaftar akaun? 
@@ -116,41 +129,30 @@
         </div>
     </div>
     
-    {{-- Ruangan Logo Rasmi KPT / UPSI (Disembunyikan di skrin phone supaya tak semak) --}}
+    {{-- Ruangan Logo Rasmi --}}
     <div class="absolute bottom-6 right-6 lg:bottom-12 lg:right-12 z-20 hidden md:flex items-center space-x-4 lg:space-x-6 bg-white/10 backdrop-blur-sm px-4 lg:px-6 py-2 lg:py-3 rounded-2xl border border-white/20 shadow-lg">
-        <img src="{{ asset('images/logo-kpt.png') }}" alt="Kementerian Pendidikan Tinggi" class="h-8 lg:h-10 w-auto object-contain opacity-90 hover:opacity-100 hover:scale-105 transition duration-300">
-        <img src="{{ asset('images/logo-upsi.png') }}" alt="UPSI" class="h-10 lg:h-12 w-auto object-contain opacity-90 hover:opacity-100 hover:scale-105 transition duration-300">
-        <img src="{{ asset('images/logo-kab.png') }}" alt="KAB" class="h-10 lg:h-12 w-auto object-contain opacity-90 hover:opacity-100 hover:scale-105 transition duration-300">
-        <img src="{{ asset('images/logo-100tahun.png') }}" alt="100 Tahun UPSI" class="h-6 lg:h-8 w-auto object-contain opacity-90 hover:opacity-100 hover:scale-105 transition duration-300">
+        <img src="{{ asset('images/logo-kpt.png') }}" alt="KPT" class="h-8 lg:h-10 w-auto object-contain opacity-90 hover:opacity-100 transition duration-300">
+        <img src="{{ asset('images/logo-upsi.png') }}" alt="UPSI" class="h-10 lg:h-12 w-auto object-contain opacity-90 hover:opacity-100 transition duration-300">
+        <img src="{{ asset('images/logo-kab.png') }}" alt="KAB" class="h-10 lg:h-12 w-auto object-contain opacity-90 hover:opacity-100 transition duration-300">
+        <img src="{{ asset('images/logo-100tahun.png') }}" alt="100 Tahun UPSI" class="h-6 lg:h-8 w-auto object-contain opacity-90 hover:opacity-100 transition duration-300">
     </div>
 
-    {{-- Script Typewriter Infiniti --}}
+    {{-- Script Typewriter --}}
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const text = "Selamat Datang!";
             const typewriterEl = document.getElementById("typewriter-text");
-            let i = 0;
-            let isDeleting = false;
-
+            let i = 0; let isDeleting = false;
             function handleTypewriter() {
                 if (!isDeleting && i <= text.length) {
                     typewriterEl.innerHTML = text.substring(0, i);
                     i++;
-                    if (i > text.length) {
-                        isDeleting = true;
-                        setTimeout(handleTypewriter, 2000); 
-                        return;
-                    }
+                    if (i > text.length) { isDeleting = true; setTimeout(handleTypewriter, 2000); return; }
                     setTimeout(handleTypewriter, 150); 
-                } 
-                else if (isDeleting && i >= 0) {
+                } else if (isDeleting && i >= 0) {
                     typewriterEl.innerHTML = text.substring(0, i);
                     i--;
-                    if (i < 0) {
-                        isDeleting = false;
-                        setTimeout(handleTypewriter, 500); 
-                        return;
-                    }
+                    if (i < 0) { isDeleting = false; setTimeout(handleTypewriter, 500); return; }
                     setTimeout(handleTypewriter, 75); 
                 }
             }
