@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight flex items-center gap-2">
                 {{-- Heroicon: Clipboard Document --}}
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -9,14 +9,22 @@
                 {{ __('Sistem e-Booking Kolej KAB') }}
             </h2>
             
-            {{-- Butang Premium: Gradient Blue --}}
-            <a href="{{ route('dashboard') }}" class="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-sm font-bold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5">
-                {{-- Heroicon: Plus --}}
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-                </svg>
-                Terus ke Borang Tempahan
-            </a>
+            {{-- DUA BUTANG UTAMA UNTUK NAVIGASI PELAJAR --}}
+            <div class="flex items-center gap-3 w-full sm:w-auto">
+                {{-- Butang 1: Semak Status Permohonan --}}
+                <a href="{{ route('bookings.status') }}" class="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white text-sm font-bold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5">
+                    📋 Semak Status
+                </a>
+
+                {{-- Butang 2: Terus ke Borang Tempahan Terasing --}}
+                <a href="{{ route('bookings.create') }}" class="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-sm font-bold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5">
+                    {{-- Heroicon: Plus --}}
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Terus ke Borang Tempahan
+                </a>
+            </div>
         </div>
     </x-slot>
 
@@ -28,7 +36,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 animate-pulse text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <p class="text-sm font-medium">Selamat Datang! Sila pilih kategori fasiliti yang ingin ditempah untuk melihat jadual dan kekosongan.</p>
+                <p class="text-sm font-medium">Selamat Datang, <strong>{{ Auth::user()->name }}</strong>! Sila pilih kategori fasiliti yang ingin ditempah untuk melihat direktori penuh.</p>
             </div>
 
             <div class="text-center mb-12">

@@ -13,23 +13,30 @@ class BookingController extends Controller
      * 📊 HALAMAN UTAMA DASHBOARD / MENU
      */
     public function index()
-    {
-        // 1. Jika pengguna adalah STUDENT, bawa mereka ke Hub Menu Utama dahulu
-        if (Auth::user()->role === 'student') {
-            return view('menu-fasiliti');
-        }
-
-        // 2. Jika bukan student (Pejabat / Pengetua), kekalkan paparan senarai permohonan mereka
-        $bookings = DB::table('bookings')
-            ->leftJoin('users', 'bookings.user_id', '=', 'users.id')
-            ->leftJoin('kabs', 'bookings.kab_id', '=', 'kabs.id')
-            ->select('bookings.*', 'users.name as nama_pemohon', 'kabs.nama_kab')
-            ->get();
-
-        $kabs = DB::table('kabs')->get(); // Ambil semua fasiliti dinamik dari database
-
-        return view('dashboard', compact('bookings', 'kabs'));
+{
+    // Jika user ialah student/non-student, terus hantar mereka ke halaman menu-fasiliti yang kacak ini!
+    if (auth()->user()->role === 'student' || auth()->user()->role === 'non-student') {
+        return redirect()->route('fasiliti.menu'); 
     }
+
+    // Jika pejabat/pengetua, kekalkan mereka di dashboard asal untuk luluskan borang
+    $bookings = DB::table('bookings')
+        ->leftJoin('users', 'bookings.user_id', '=', 'users.id')
+        ->leftJoin('kabs', 'bookings.kab_id', '=', 'kabs.id')
+        ->select('bookings.*', 'users.name as nama_pemohon', 'users.role as role_pemohon', 'kabs.nama_kab')
+        ->get();
+
+    return view('dashboard', compact('bookings'));
+}
+
+    public function create()
+{
+    // Ambil senarai semua fasiliti/peralatan dari pangkalan data
+    $kabs = DB::table('kabs')->get(); 
+    
+    // Buka fail paparan borang tempahan yang baharu
+    return view('borang-tempahan', compact('kabs'));
+}
 
     /**
      * 🚀 FUNGSI BAHARU: Memaparkan halaman status permohonan terasing (Khas untuk Student/Non-Student).
@@ -75,13 +82,39 @@ class BookingController extends Controller
 
         // 💡 MOD TRIAL: Memastikan ID ditukar ke integer secara selamat (default ke 1 jika kosong)
         $kabId = intval($request->kab_id) > 0 ? intval($request->kab_id) : 1;
+        
+        $tarikhGuna = $request->tarikh_guna;
+        $masaMula   = $request->masa_mula;
+        $masaTamat  = $request->masa_tamat;
 
+        // 🔍 1. SEMAKAN BERTINDIH: Cari jika slot waktu ini sudah diambil oleh orang lain
+        $isOverlap = DB::table('bookings')
+            ->where('kab_id', $kabId)
+            ->where('tarikh_guna', $tarikhGuna)
+            ->where(function ($query) use ($masaMula, $masaTamat) {
+                $query->where(function ($q) use ($masaMula, $masaTamat) {
+                    $q->where('masa_mula', '<', $masaTamat)
+                      ->where('masa_tamat', '>', $masaMula);
+                });
+            })
+            // Hanya sekat jika permohonan sedia ada berstatus 'pending' atau 'Lulus' (Suaikan ejaan mengikut sistem anda)
+            ->whereIn('status_kelulusan', ['pending', 'Lulus', 'Dalam Proses'])
+            ->exists();
+
+        // ❌ 2. Jika bertindih, sekat kemasukan dan hantar ralat balik ke borang
+        if ($isOverlap) {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['booking_conflict' => 'Maaf, fasiliti ini telah ditempah pada tarikh dan masa yang dipilih. Sila pilih slot waktu lain.']);
+        }
+
+        // ✅ 3. Jika tiada pertindihan, terus masukkan data baru ke database seperti biasa
         DB::table('bookings')->insert([
             'user_id' => Auth::id(),
             'kab_id' => $kabId,
-            'tarikh_guna' => $request->tarikh_guna,
-            'masa_mula' => $request->masa_mula,
-            'masa_tamat' => $request->masa_tamat,
+            'tarikh_guna' => $tarikhGuna,
+            'masa_mula' => $masaMula,
+            'masa_tamat' => $masaTamat,
             'tujuan_tempahan' => $request->tujuan_tempahan,
             'status_kelulusan' => 'pending', // Status awal wajib huruf kecil
             'created_at' => now(),
@@ -90,7 +123,6 @@ class BookingController extends Controller
 
         return redirect()->route('dashboard')->with('success', 'Tahniah! Permohonan tempahan fasiliti kolej anda telah berjaya dihantar.');
     }
-
     /**
      * Tindakan Sokongan oleh Pentadbir Pejabat.
      */
