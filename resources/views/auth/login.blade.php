@@ -1,91 +1,96 @@
-<x-guest-layout>
-    <div class="w-full sm:max-w-md my-6 px-8 py-10 bg-white shadow-2xl overflow-hidden sm:rounded-2xl border border-gray-100 mx-auto">
-        
-        <div class="mb-8 text-center">
-            <div class="inline-flex p-3 bg-blue-100 text-blue-600 rounded-2xl mb-3">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
-            </div>
-            <h2 class="text-2xl font-bold text-gray-800 tracking-tight">Log Masuk Sistem</h2>
-            <p class="text-sm text-gray-500 mt-1">Tempahan Fasiliti Kolej Kediaman Aminuddin Baki</p>
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sistem Tempahan KAB - UPSI</title>
+    
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+<body class="antialiased relative min-h-screen overflow-hidden">
+    
+    {{-- Video Latar Belakang --}}
+    <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover -z-20">
+        <source src="{{ asset('videos/bg-kolej.mp4') }}" type="video/mp4">
+    </video>
+
+    {{-- Lapisan Biru Korporat myKAB (Saya kurangkan sikit ketebalan warna supaya video kat belakang nampak jelas) --}}
+    <div class="absolute inset-0 bg-gradient-to-r from-blue-950/80 via-indigo-900/70 to-blue-800/40 -z-10"></div>
+
+    {{-- Navigasi Atas dengan Effect Typewriter --}}
+    <nav class="absolute top-0 left-0 right-0 z-20 p-6 flex justify-between items-center text-white">
+        <div class="text-3xl font-extrabold tracking-wider flex items-center">
+            <span id="typewriter-text"></span>
+            <span class="animate-pulse text-yellow-400 ml-1">|</span>
         </div>
+        <div class="hidden md:flex space-x-6 font-semibold">
+            <a href="#" class="hover:text-yellow-400 transition duration-300">Home</a>
+            <a href="#" class="hover:text-yellow-400 transition duration-300">News</a>
+            <a href="#" class="hover:text-yellow-400 transition duration-300">FAQ</a>
+            <a href="#" class="hover:text-yellow-400 transition duration-300">Team</a>
+            <a href="#" class="hover:text-yellow-400 transition duration-300">Contact</a>
+        </div>
+    </nav>
 
-        <x-auth-session-status class="mb-4" :status="session('status')" />
-
-        <form method="POST" action="{{ route('login') }}" class="space-y-5">
-            @csrf
-
-            {{-- Ruangan Email --}}
-            <div>
-                <x-input-label for="email" :value="__('Alamat Emel / ID Pengguna')" class="text-gray-700 font-semibold mb-1" />
-                <x-text-input id="email" 
-                    class="block mt-1 w-full px-4 py-3 rounded-xl border-gray-200 bg-gray-50 text-gray-800 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition duration-200 shadow-sm" 
-                    type="email" 
-                    name="email" 
-                    :value="old('email')" 
-                    required 
-                    autofocus 
-                    autocomplete="username" 
-                    placeholder="contoh@siswa.ukm.edu.my" />
-                <x-input-error :messages="$errors->get('email')" class="mt-2 text-xs" />
+    {{-- Konten Utama (Kotak Login) --}}
+    <div class="relative z-10 flex min-h-screen items-center px-6 sm:px-16 lg:px-32 pt-16">
+        
+        <div class="w-full max-w-sm bg-white rounded-[2rem] shadow-2xl p-8 text-center border-t-4 border-red-600">
+            
+            {{-- Ruangan Logo myKAB --}}
+            {{-- Ruangan Logo myKAB (Trik Margin Negatif) --}}
+            <div class="flex justify-center -mt-6 -mb-4">
+                <img src="{{ asset('images/logo_mykab.png') }}" alt="Logo myKAB" class="h-40 w-auto object-contain hover:scale-110 transition transform duration-300">
             </div>
 
-            {{-- Ruangan Password --}}
-            <div>
-                <div class="flex items-center justify-between mb-1">
-                    <x-input-label for="password" :value="__('Kata Laluan')" class="text-gray-700 font-semibold" />
-                    
-                    @if (Route::has('password.request'))
-                        <a class="text-xs text-blue-600 hover:text-blue-800 hover:underline transition duration-150" href="{{ route('password.request') }}">
-                            {{ __('Lupa kata laluan?') }}
-                        </a>
-                    @endif
+            <h2 class="text-xl font-extrabold text-blue-950 mb-6">Log Masuk Sistem</h2>
+
+            {{-- Mesej Ralat --}}
+            @if (session('error'))
+                <div class="text-red-600 text-xs font-bold mb-4 bg-red-50 p-2 rounded-lg border border-red-100">
+                    {{ session('error') }}
+                </div>
+            @endif
+
+            <form method="POST" action="{{ route('login') }}" class="space-y-4">
+                @csrf
+
+                {{-- Input Emel --}}
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-blue-900" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                    </div>
+                    <input id="email" type="email" name="email" required autofocus placeholder="ID Pengguna / Emel"
+                        class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-full text-sm focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-200 transition outline-none text-gray-700">
                 </div>
 
-                <x-text-input id="password" 
-                    class="block mt-1 w-full px-4 py-3 rounded-xl border-gray-200 bg-gray-50 text-gray-800 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition duration-200 shadow-sm"
-                    type="password"
-                    name="password"
-                    required 
-                    autocomplete="current-password" 
-                    placeholder="••••••••" />
+                {{-- Input Password --}}
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-blue-900" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                    </div>
+                    <input id="password" type="password" name="password" required placeholder="Kata Laluan"
+                        class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-full text-sm focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-200 transition outline-none text-gray-700">
+                </div>
 
-                <x-input-error :messages="$errors->get('password')" class="mt-2 text-xs" />
-            </div>
+                {{-- Pilihan Peranan --}}
+                <div>
+                    <select id="role" name="role" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-full text-sm text-gray-600 focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-200 transition text-center appearance-none outline-none font-medium">
+                        <option value="" disabled selected>-- Pilih Peranan --</option>
+                        <option value="student">Pelajar</option>
+                        <option value="non-student">Bukan Pelajar / Staf</option>
+                        <option value="pejabat">Pejabat Kolej</option>
+                        <option value="pengetua">Pengetua</option>
+                    </select>
+                </div>
 
-            {{-- Dropdown Pemilihan Role (Peranan) --}}
-            <div>
-                <x-input-label for="role" :value="__('Log Masuk Sebagai (Peranan)')" class="text-gray-700 font-semibold mb-1" />
-                <select id="role" name="role" 
-                    class="block mt-1 w-full px-4 py-3 rounded-xl border-gray-200 bg-gray-50 text-gray-800 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition duration-200 shadow-sm font-medium" 
-                    required>
-                    <option value="" disabled {{ old('role') ? '' : 'selected' }}>-- Sila Pilih Peranan Anda --</option>
-                    <option value="student" {{ old('role') === 'student' ? 'selected' : '' }}>Pelajar (Student)</option>
-                    <option value="non-student" {{ old('role') === 'non-student' ? 'selected' : '' }}>Bukan Pelajar (Non-Student/Staf)</option>
-                    <option value="pejabat" {{ old('role') === 'pejabat' ? 'selected' : '' }}>Pentadbir Pejabat</option>
-                    <option value="pengetua" {{ old('role') === 'pengetua' ? 'selected' : '' }}>Pengetua Kolej</option>
-                </select>
-                <x-input-error :messages="$errors->get('role')" class="mt-2 text-xs" />
-            </div>
-
-            {{-- Ruangan Remember Me --}}
-            <div class="flex items-center justify-between pt-1">
-                <label for="remember_me" class="inline-flex items-center cursor-pointer">
-                    <input id="remember_me" type="checkbox" class="rounded-lg border-gray-300 text-blue-600 shadow-sm focus:ring-blue-500 focus:ring-offset-0 w-4 h-4" name="remember">
-                    <span class="ms-2 text-sm text-gray-600 selection:bg-transparent">{{ __('Ingat sesi saya') }}</span>
-                </label>
-            </div>
-
-            {{-- Bahagian Butang Hantar --}}
-            <div class="pt-2 space-y-4">
-                <button type="submit" class="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 transition duration-200 text-center justify-center flex items-center gap-2">
-                    <span>Masuk ke Dashboard</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                    </svg>
+                {{-- Butang Log Masuk (Gabungan Merah & Kuning Logo) --}}
+                <button type="submit" class="w-full py-3 bg-gradient-to-r from-red-600 to-amber-500 hover:from-red-700 hover:to-amber-600 text-white rounded-full font-bold shadow-lg transition transform hover:-translate-y-0.5 mt-2">
+                    Sign In
                 </button>
+            </form>
 
+<<<<<<< Updated upstream
                 {{-- 🚀 PASAK PINTAS LOG MASUK (TRIAL MODE) --}}
                 <div class="pt-4 border-t border-dashed border-gray-200">
                     <p class="text-xs text-center font-bold text-gray-400 uppercase tracking-wider mb-3">
@@ -113,18 +118,56 @@
                         🎓 Pengetua
                         </a>
                     </div>
+=======
+            {{-- Pintasan Ujian WBL --}}
+            <div class="mt-8 pt-4 border-t border-gray-100">
+                <p class="text-[10px] text-gray-400 uppercase tracking-wider mb-3 font-bold">Pintasan Ujian WBL</p>
+                <div class="flex justify-center gap-2">
+                    <a href="{{ route('login.quick', 'student') }}" class="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs hover:bg-blue-100 font-semibold transition">Pelajar</a>
+                    <a href="{{ route('login.quick', 'pejabat') }}" class="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs hover:bg-blue-100 font-semibold transition">Pejabat</a>
+                    <a href="{{ route('login.quick', 'pengetua') }}" class="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs hover:bg-blue-100 font-semibold transition">Pengetua</a>
+>>>>>>> Stashed changes
                 </div>
-
-                @if (Route::has('register'))
-                    <div class="text-center text-sm text-gray-600 pt-2 border-t border-gray-100">
-                        Belum mempunyai akaun? 
-                        <a href="{{ route('register') }}" class="font-semibold text-blue-600 hover:text-blue-800 hover:underline transition duration-150">
-                            Daftar Akaun Baru
-                        </a>
-                    </div>
-                @endif
             </div>
-        </form>
 
+            <div class="mt-5 text-xs text-gray-400 font-medium">
+                &copy; {{ date('Y') }} Kolej Aminuddin Baki, UPSI.
+            </div>
+        </div>
     </div>
-</x-guest-layout>
+    {{-- Ruangan Logo Rasmi KPT / UPSI (Bawah Kanan) --}}
+    <div class="absolute bottom-12 right-12 z-20 hidden lg:flex items-center space-x-6 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-2xl border border-white/20 shadow-lg">
+        {{-- Logo 1: KPT --}}
+        <img src="{{ asset('images/logo-kpt.png') }}" alt="Kementerian Pendidikan Tinggi" class="h-10 w-auto object-contain opacity-90 hover:opacity-100 hover:scale-105 transition duration-300">
+        
+        {{-- Logo 2: UPSI --}}
+        <img src="{{ asset('images/logo-upsi.png') }}" alt="UPSI" class="h-12 w-auto object-contain opacity-90 hover:opacity-100 hover:scale-105 transition duration-300">
+        
+        {{-- Logo 3: KAB --}}
+        <img src="{{ asset('images/logo-kab.png') }}" alt="KAB" class="h-12 w-auto object-contain opacity-90 hover:opacity-100 hover:scale-105 transition duration-300">
+        
+        {{-- Logo 4: 100 Tahun UPSI --}}
+        <img src="{{ asset('images/logo-100tahun.png') }}" alt="100 Tahun UPSI" class="h-8 w-auto object-contain opacity-90 hover:opacity-100 hover:scale-105 transition duration-300">
+    </div>
+
+    {{-- Script untuk Effect Typewriter --}}
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const text = "Selamat Datang!";
+            const speed = 150; // Kelajuan menaip (ms)
+            let i = 0;
+            
+            function typeWriter() {
+                if (i < text.length) {
+                    document.getElementById("typewriter-text").innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(typeWriter, speed);
+                }
+            }
+            
+            // Mula menaip selepas 0.5 saat muka surat diload
+            setTimeout(typeWriter, 500);
+        });
+    </script>
+</body>
+</html>
