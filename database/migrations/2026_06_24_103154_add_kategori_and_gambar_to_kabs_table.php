@@ -9,16 +9,26 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('kabs', function (Blueprint $table) {
-            // Tambah kolum kategori dan gambar dengan betul selepas nama_kab
-            $table->string('kategori')->default('tempat')->after('nama_kab'); 
-            $table->string('gambar')->nullable()->after('kategori');
+            // Guna 'hasColumn' supaya Laravel semak dulu sebelum tambah kolum. Ini mengelakkan error duplicate!
+            if (!Schema::hasColumn('kabs', 'kategori')) {
+                $table->string('kategori')->default('tempat')->after('nama_kab'); 
+            }
+            
+            if (!Schema::hasColumn('kabs', 'gambar')) {
+                $table->string('gambar')->nullable()->after('kategori');
+            }
         });
     }
 
     public function down(): void
     {
         Schema::table('kabs', function (Blueprint $table) {
-            $table->dropColumn(['kategori', 'gambar']);
+            if (Schema::hasColumn('kabs', 'kategori')) {
+                $table->dropColumn('kategori');
+            }
+            if (Schema::hasColumn('kabs', 'gambar')) {
+                $table->dropColumn('gambar');
+            }
         });
     }
 };
