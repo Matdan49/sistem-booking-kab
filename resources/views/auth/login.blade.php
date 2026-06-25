@@ -37,7 +37,6 @@
         
         <div class="w-full max-w-sm bg-white rounded-[2rem] shadow-2xl p-8 text-center border-t-4 border-red-600">
             
-            {{-- Ruangan Logo myKAB --}}
             {{-- Ruangan Logo myKAB (Trik Margin Negatif) --}}
             <div class="flex justify-center -mt-6 -mb-4">
                 <img src="{{ asset('images/logo_mykab.png') }}" alt="Logo myKAB" class="h-40 w-auto object-contain hover:scale-110 transition transform duration-300">
@@ -90,43 +89,14 @@
                 </button>
             </form>
 
-<<<<<<< Updated upstream
-                {{-- 🚀 PASAK PINTAS LOG MASUK (TRIAL MODE) --}}
-                <div class="pt-4 border-t border-dashed border-gray-200">
-                    <p class="text-xs text-center font-bold text-gray-400 uppercase tracking-wider mb-3">
-                        ⚡ Log Masuk Segera (Ujian/Trial)
-                    </p>
-                    
-                    <div class="grid grid-cols-2 gap-3 text-center">
-                        <a href="{{ route('login.quick', 'student') }}" 
-                        class="px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold rounded-xl border border-blue-200 transition duration-150 block">
-                        👨‍🎓 Student
-                        </a>
-
-                        <a href="{{ route('login.quick', 'non-student') }}" 
-                        class="px-4 py-2 bg-teal-50 hover:bg-teal-100 text-teal-700 text-xs font-bold rounded-xl border border-teal-200 transition duration-150 block">
-                        👤 Non-Student
-                        </a>
-
-                        <a href="{{ route('login.quick', 'pejabat') }}" 
-                        class="px-4 py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 text-xs font-bold rounded-xl border border-amber-200 transition duration-150 block">
-                        🏢 Pejabat
-                        </a>
-
-                        <a href="{{ route('login.quick', 'pengetua') }}" 
-                        class="px-4 py-2 bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-bold rounded-xl border border-purple-200 transition duration-150 block">
-                        🎓 Pengetua
-                        </a>
-                    </div>
-=======
             {{-- Pintasan Ujian WBL --}}
             <div class="mt-8 pt-4 border-t border-gray-100">
                 <p class="text-[10px] text-gray-400 uppercase tracking-wider mb-3 font-bold">Pintasan Ujian WBL</p>
-                <div class="flex justify-center gap-2">
+                <div class="flex flex-wrap justify-center gap-2">
                     <a href="{{ route('login.quick', 'student') }}" class="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs hover:bg-blue-100 font-semibold transition">Pelajar</a>
+                    <a href="{{ route('login.quick', 'non-student') }}" class="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs hover:bg-blue-100 font-semibold transition">Bukan Pelajar</a>
                     <a href="{{ route('login.quick', 'pejabat') }}" class="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs hover:bg-blue-100 font-semibold transition">Pejabat</a>
                     <a href="{{ route('login.quick', 'pengetua') }}" class="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs hover:bg-blue-100 font-semibold transition">Pengetua</a>
->>>>>>> Stashed changes
                 </div>
             </div>
 
@@ -135,38 +105,56 @@
             </div>
         </div>
     </div>
+    
     {{-- Ruangan Logo Rasmi KPT / UPSI (Bawah Kanan) --}}
     <div class="absolute bottom-12 right-12 z-20 hidden lg:flex items-center space-x-6 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-2xl border border-white/20 shadow-lg">
-        {{-- Logo 1: KPT --}}
         <img src="{{ asset('images/logo-kpt.png') }}" alt="Kementerian Pendidikan Tinggi" class="h-10 w-auto object-contain opacity-90 hover:opacity-100 hover:scale-105 transition duration-300">
-        
-        {{-- Logo 2: UPSI --}}
         <img src="{{ asset('images/logo-upsi.png') }}" alt="UPSI" class="h-12 w-auto object-contain opacity-90 hover:opacity-100 hover:scale-105 transition duration-300">
-        
-        {{-- Logo 3: KAB --}}
         <img src="{{ asset('images/logo-kab.png') }}" alt="KAB" class="h-12 w-auto object-contain opacity-90 hover:opacity-100 hover:scale-105 transition duration-300">
-        
-        {{-- Logo 4: 100 Tahun UPSI --}}
         <img src="{{ asset('images/logo-100tahun.png') }}" alt="100 Tahun UPSI" class="h-8 w-auto object-contain opacity-90 hover:opacity-100 hover:scale-105 transition duration-300">
     </div>
 
     {{-- Script untuk Effect Typewriter --}}
+    {{-- Script untuk Effect Typewriter Infiniti (Taip -> Relaks -> Padam -> Ulang) --}}
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const text = "Selamat Datang!";
-            const speed = 150; // Kelajuan menaip (ms)
-            let i = 0;
+            const typewriterEl = document.getElementById("typewriter-text");
             
-            function typeWriter() {
-                if (i < text.length) {
-                    document.getElementById("typewriter-text").innerHTML += text.charAt(i);
+            let i = 0;
+            let isDeleting = false;
+
+            function handleTypewriter() {
+                // 1. Mod Menaip (Typing)
+                if (!isDeleting && i <= text.length) {
+                    typewriterEl.innerHTML = text.substring(0, i);
                     i++;
-                    setTimeout(typeWriter, speed);
+                    
+                    // Kalau dah habis taip semua huruf
+                    if (i > text.length) {
+                        isDeleting = true;
+                        setTimeout(handleTypewriter, 2000); // ⏱️ Relaks kejap selama 2 saat selepas habis taip
+                        return;
+                    }
+                    setTimeout(handleTypewriter, 150); // ⚡ Kelajuan menaip (150ms setiap huruf)
+                } 
+                // 2. Mod Memadam (Undo Writing / Deleting)
+                else if (isDeleting && i >= 0) {
+                    typewriterEl.innerHTML = text.substring(0, i);
+                    i--;
+                    
+                    // Kalau dah bersih semua huruf dipadam
+                    if (i < 0) {
+                        isDeleting = false;
+                        setTimeout(handleTypewriter, 500); // ⏱️ Sela masa setengah saat sebelum mula taip balik
+                        return;
+                    }
+                    setTimeout(handleTypewriter, 75); // ⚡ Kelajuan memadam (dibuat laju sikit, 75ms supaya tak bosan menunggu)
                 }
             }
             
-            // Mula menaip selepas 0.5 saat muka surat diload
-            setTimeout(typeWriter, 500);
+            // Mula animasi selepas 0.5 saat muka surat diload
+            setTimeout(handleTypewriter, 500);
         });
     </script>
 </body>
