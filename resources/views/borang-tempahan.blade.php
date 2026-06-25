@@ -49,7 +49,7 @@
         color: #f28c18 !important;
     }
 </style>
-
+@section('title', 'Borang Tempahan')
 <x-app-layout>
     <x-slot name="header">
         {{-- BANNER HEADER: SLATE CORPORATE BLUE CAP --}}
