@@ -15,11 +15,9 @@ class BookingController extends Controller
     public function index()
 {
     // Jika user ialah student/non-student, terus hantar mereka ke halaman menu-fasiliti yang kacak ini!
-    if (Auth::check()) { // Cek dulu ada orang login ke tak
     if (Auth::user()->role === 'student' || Auth::user()->role === 'non-student') {
         return redirect()->route('fasiliti.menu'); 
     }
-}
 
     // Jika pejabat/pengetua, kekalkan mereka di dashboard asal untuk luluskan borang
     $bookings = DB::table('bookings')
