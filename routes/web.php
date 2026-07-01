@@ -62,7 +62,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Pengurusan CRUD Fasiliti
         Route::get('/admin/fasiliti', [BookingController::class, 'adminFasilitiIndex'])->name('admin.fasiliti.index');
         Route::post('/admin/fasiliti/store', [BookingController::class, 'adminFasilitiStore'])->name('admin.fasiliti.store');
-        Route::post('/admin/fasiliti/{id}/update', [BookingController::class, 'adminFasilitiUpdate'])->name('admin.fasiliti.update');
         Route::delete('/admin/fasiliti/{id}/delete', [BookingController::class, 'adminFasilitiDelete'])->name('admin.fasiliti.delete');
 
         // Tambah laluan untuk buka borang edit
