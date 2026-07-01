@@ -22,12 +22,12 @@
 
     <div class="header">
         <h2>Pejabat Pengurusan Kolej Aminuddin Baki (KAB)</h2>
-        <p>Universiti Kebangsaan Malaysia, 43600 UKM Bangi, Selangor Darul Ehsan</p>
-        <p>E-mel: kab@ukm.edu.my | Tel: 03-8921XXXX</p>
+        <p>Universiti Pendidikan Sultan Idris, 35900, Tanjong Malim, Perak Darul Ridzuan</p>
+        <p>E-mel: kab@upsi.edu.my | Tel: 05-450 7170</p>
     </div>
 
     <div class="tajuk-surat">
-        SURAT KELULUSAN RESMI TEMPAHAN FASILITI KOLEJ
+        SURAT KELULUSAN RASMI TEMPAHAN FASILITI KOLEJ
     </div>
 
     <p>Kepada Sesiapa Yang Berkenaan,</p>
@@ -75,15 +75,18 @@
         ✓ STATUS: PERMOHONAN INI TELAH DILULUSKAN SECARA RASMI
     </div>
 
-    <p>Sila bawa salinan surat kelulusan digital/bercetak ini semasa hari kejadian untuk diserahkan kepada petugas kaunter blok bangunan bagi tuntutan kunci atau akses fasiliti.</p>
+    <p>Sila bawa salinan surat kelulusan digital/bercetak ini semasa hari kejadian untuk diserahkan kepada petugas kaunter blok bangunan bagi tuntutan kunci/peralatan yang telah ditempah.</p>
 
     <div class="footer">
         <p>Yang benar,</p>
         <div class="sign-space">
             PENGURUSAN KOLEJ AMINUDDIN BAKI<br>
-            Universiti Kebangsaan Malaysia
+            Universiti Pendidikan Sultan Idris,
+            35900, Tanjong Malim,
+            Perak Darul Ridzuan
+
         </div>
-        <p style="font-size: 10px; color: #777; margin-top: 40px;">*Surat ini dijana secara digital melalui Sistem Booking KAB dan tidak memerlukan tandatangan basah.*</p>
+        <p style="font-size: 10px; color: #777; margin-top: 40px;">*Surat ini dijana secara digital melalui Sistem Booking myKAB dan tidak memerlukan tandatangan.*</p>
     </div>
 
 </body>
