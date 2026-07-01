@@ -72,7 +72,7 @@
     </table>
 
     <div class="status-box">
-        ✓ STATUS: PERMOHONAN INI TELAH DILULUSKAN SECARA RASMI
+        STATUS: PERMOHONAN INI TELAH DILULUSKAN SECARA RASMI
     </div>
 
     <p>Sila bawa salinan surat kelulusan digital/bercetak ini semasa hari kejadian untuk diserahkan kepada petugas kaunter blok bangunan bagi tuntutan kunci/peralatan yang telah ditempah.</p>
