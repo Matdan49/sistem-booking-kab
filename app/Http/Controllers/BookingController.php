@@ -13,30 +13,30 @@ class BookingController extends Controller
      * 📊 HALAMAN UTAMA DASHBOARD / MENU
      */
     public function index()
-{
-    // Jika user ialah student/non-student, terus hantar mereka ke halaman menu-fasiliti yang kacak ini!
-    if (Auth::user()->role === 'student' || Auth::user()->role === 'non-student') {
-        return redirect()->route('fasiliti.menu'); 
+    {
+        // Jika user ialah student/non-student, terus hantar mereka ke halaman menu-fasiliti yang kacak ini!
+        if (Auth::user()->role === 'student' || Auth::user()->role === 'non-student') {
+            return redirect()->route('fasiliti.menu'); 
+        }
+
+        // Jika pejabat/pengetua, kekalkan mereka di dashboard asal untuk luluskan borang
+        $bookings = DB::table('bookings')
+            ->leftJoin('users', 'bookings.user_id', '=', 'users.id')
+            ->leftJoin('kabs', 'bookings.kab_id', '=', 'kabs.id')
+            ->select('bookings.*', 'users.name as nama_pemohon', 'users.role as role_pemohon', 'kabs.nama_kab')
+            ->get();
+
+        return view('dashboard', compact('bookings'));
     }
 
-    // Jika pejabat/pengetua, kekalkan mereka di dashboard asal untuk luluskan borang
-    $bookings = DB::table('bookings')
-        ->leftJoin('users', 'bookings.user_id', '=', 'users.id')
-        ->leftJoin('kabs', 'bookings.kab_id', '=', 'kabs.id')
-        ->select('bookings.*', 'users.name as nama_pemohon', 'users.role as role_pemohon', 'kabs.nama_kab')
-        ->get();
-
-    return view('dashboard', compact('bookings'));
-}
-
     public function create()
-{
-    // Ambil senarai semua fasiliti/peralatan dari pangkalan data
-    $kabs = DB::table('kabs')->get(); 
-    
-    // Buka fail paparan borang tempahan yang baharu
-    return view('borang-tempahan', compact('kabs'));
-}
+    {
+        // Ambil senarai semua fasiliti/peralatan dari pangkalan data
+        $kabs = DB::table('kabs')->get(); 
+        
+        // Buka fail paparan borang tempahan yang baharu
+        return view('borang-tempahan', compact('kabs'));
+    }
 
     /**
      * 🚀 FUNGSI BAHARU: Memaparkan halaman status permohonan terasing (Khas untuk Student/Non-Student).
@@ -123,6 +123,7 @@ class BookingController extends Controller
 
         return redirect()->route('dashboard')->with('success', 'Tahniah! Permohonan tempahan fasiliti kolej anda telah berjaya dihantar.');
     }
+    
     /**
      * Tindakan Sokongan oleh Pentadbir Pejabat.
      */
@@ -260,6 +261,7 @@ class BookingController extends Controller
             'nama_kab' => 'required|string|max:255',
             'no_kab' => 'nullable|string|max:50',
             'kategori' => 'required|in:tempat,peralatan',
+            'status' => 'nullable|in:available,maintenance', // ✅ TAMBAHAN BARU
         ]);
 
         $namaGambar = null;
@@ -290,7 +292,7 @@ class BookingController extends Controller
             'gambar'          => $namaGambar, 
             'kapasiti'        => 0,          
             'harga_per_malam' => 0.00,       
-            'status'          => 'available',
+            'status'          => $request->status ?? 'available', // ✅ TAMBAHAN BARU (TERIMA DARI BORANG)
             'deskripsi'       => null,       
             'created_at'      => now(),
             'updated_at'      => now(),
@@ -308,6 +310,7 @@ class BookingController extends Controller
             'nama_kab' => 'required|string|max:255',
             'no_kab' => 'nullable|string|max:50',
             'kategori' => 'required|in:tempat,peralatan',
+            'status' => 'nullable|in:available,maintenance', // ✅ TAMBAHAN BARU
             'gambar' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         ]);
 
@@ -334,11 +337,12 @@ class BookingController extends Controller
             'nama_kab'        => $request->nama_kab,
             'no_kab'          => $request->no_kab ?? 'KAB-' . uniqid(),
             'kategori'        => $request->kategori,
+            'status'          => $request->status ?? 'available', // ✅ TAMBAHAN BARU
             'gambar'          => $namaGambar, 
             'updated_at'      => now(),
         ]);
 
-        return redirect()->back()->with('success', 'Maklumat fasiliti berjaya dikemaskini!');
+        return redirect()->route('admin.fasiliti.index')->with('success', 'Fasiliti "' . $request->nama_kab . '" telah berjaya dikemaskini!');
     }
 
     /**
@@ -359,4 +363,22 @@ class BookingController extends Controller
 
         return redirect()->back()->with('success', 'Fasiliti telah berjaya dipadamkan sepenuhnya.');
     }
-}
+        /**
+         * Membuka borang untuk mengedit data fasiliti
+         */
+        /**
+ * Membuka borang untuk mengedit data fasiliti
+ */
+        public function adminFasilitiEdit($id)
+        {
+            $fasiliti = DB::table('kabs')->where('id', $id)->first();
+            
+            if (!$fasiliti) {
+                return redirect()->route('admin.fasiliti.index')->with('error', 'Fasiliti tidak ditemui.');
+            }
+            
+            // Cukup satu return sahaja: buka paparan borang edit
+            return view('admin.fasiliti-edit', compact('fasiliti'));
+            
+        }
+    }

@@ -78,11 +78,10 @@
     {{-- INTERFACE BASE: GAMBAR LATAR BELAKANG KOLEJ KAB YANG WARM --}}
     <div class="py-12 min-h-screen relative z-10 antialiased bg-cover bg-center bg-no-repeat bg-fixed" 
          style="background-image: url('https://images.unsplash.com/photo-1607237138185-eedd99615a0f?q=80&w=1920');">
-         {{-- Nota: Anda boleh gantikan URL gambar di atas dengan laluan fail imej kolej anda sendiri, contoh: asset('images/kolej-kab.jpg') --}}
 
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 relative z-20">
             
-            {{-- KAD JADUAL UTAMA: ELEGAN GLASSMORPHISM (FROSTED WARM SAND GLASS) --}}
+            {{-- KAD JADUAL UTAMA: ELEGAN GLASSMORPHISM --}}
             <div class="bg-[#fbf9f4]/80 backdrop-blur-md border border-white/40 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] rounded-3xl p-6 sm:p-8">
                 
                 {{-- INTERNAL HEADLINE JADUAL --}}
@@ -102,7 +101,6 @@
                 <div class="overflow-x-auto rounded-2xl border border-slate-900/10 bg-white/40 backdrop-blur-sm">
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            {{-- BAR HEADLINE KELABU SAND SEMI-TRANSPARENT --}}
                             <tr class="bg-slate-900/5 border-b border-slate-900/10 text-slate-800 text-xs font-black uppercase tracking-wider">
                                 <th class="p-4 rounded-l-xl">Fasiliti / Aset</th>
                                 <th class="p-4">Tarikh Guna</th>
@@ -119,15 +117,19 @@
                                     {{-- NAMA FASILITI --}}
                                     <td class="p-4 font-black text-slate-900 text-sm group-hover:text-blue-600 transition-colors duration-150">
                                         {{ $booking->nama_kab ?? 'Fasiliti ID: '.$booking->kab_id }}
+                                        <div class="text-[10px] text-slate-500 font-semibold mt-1">Kod: {{ $booking->no_kab ?? 'Tiada Kod' }}</div>
                                     </td>
+                                    
                                     {{-- TARIKH GUNA --}}
                                     <td class="p-4 whitespace-nowrap text-xs font-extrabold text-blue-600">
-                                        {{ $booking->tarikh_guna }}
+                                        {{ \Carbon\Carbon::parse($booking->tarikh_guna)->format('d M Y') }}
                                     </td>
+                                    
                                     {{-- MASA SESI --}}
                                     <td class="p-4 whitespace-nowrap text-xs text-slate-600 font-bold">
-                                        {{ $booking->masa_mula }} - {{ $booking->masa_tamat }}
+                                        {{ \Carbon\Carbon::parse($booking->masa_mula)->format('h:i A') }} - {{ \Carbon\Carbon::parse($booking->masa_tamat)->format('h:i A') }}
                                     </td>
+                                    
                                     {{-- TUJUAN PROGRAM --}}
                                     <td class="p-4 max-w-xs truncate text-xs text-slate-600 font-semibold" title="{{ $booking->tujuan_tempahan }}">
                                         {{ $booking->tujuan_tempahan }}
@@ -142,7 +144,7 @@
                                         @elseif($booking->status_kelulusan === 'lulus_muktamad')
                                             <div class="flex flex-col items-start gap-2">
                                                 <span class="px-3 py-1.5 bg-emerald-500 text-white rounded-xl text-xs font-black uppercase tracking-wider inline-block shadow-sm">Lulus Muktamad</span>
-                                                
+                                                {{-- Butang Cetak PDF Diletakkan di Bawah Lencana Lulus --}}
                                                 <a href="{{ route('bookings.pdf', $booking->id) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-red-600 to-rose-600 hover:brightness-110 text-white text-[10px] font-black uppercase tracking-wider rounded-lg shadow-md transition duration-150">
                                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                                         <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />

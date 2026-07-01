@@ -85,71 +85,52 @@
             {{-- SUBHEADLINE BANNER --}}
             <div class="text-center mb-10">
                 <p class="text-xs uppercase font-black text-amber-500 tracking-widest drop-shadow-sm">Aset & Peralatan Kolej</p>
-                <h3 class="text-2xl font-black text-slate-800 tracking-tight mt-1 uppercase">Sila Pilih Logistik Keperluan Program</h3>
+                <h3 class="text-2xl font-black text-slate-800 tracking-tight mt-1 uppercase bg-white/70 inline-block px-6 py-2 rounded-xl backdrop-blur-sm shadow-sm border border-white/50">Sila Pilih Logistik Keperluan Program</h3>
             </div>
 
-            {{-- GRID TIGA KAD PRESTIGE GLASSMORPHISM (FROSTED WARM SAND GLASS) --}}
+            {{-- GRID KAD PRESTIGE GLASSMORPHISM (KINI DINAMIK) --}}
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 
-                {{-- KAD 1: PA SYSTEM --}}
-                <div class="group bg-[#fbf9f4]/80 backdrop-blur-md border border-white/40 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] rounded-3xl overflow-hidden flex flex-col justify-between transform hover:-translate-y-2 transition-all duration-300">
-                    <div>
-                        <div class="overflow-hidden relative h-48 border-b border-slate-900/10">
-                            <img class="h-full w-full object-cover transform group-hover:scale-105 transition-all duration-500" src="https://images.unsplash.com/photo-1484755560693-a4074577af3a?q=80&w=600" alt="PA System">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-                            <span class="absolute top-4 right-4 px-3 py-1 bg-amber-500 text-white text-[10px] font-black uppercase tracking-wider rounded-lg shadow">Audio & Sistem Siar Raya</span>
+                @forelse($senarai_peralatan as $fasiliti)
+                    <div class="group bg-[#fbf9f4]/80 backdrop-blur-md border border-white/40 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] rounded-3xl overflow-hidden flex flex-col justify-between transform hover:-translate-y-2 transition-all duration-300">
+                        <div>
+                            <div class="overflow-hidden relative h-48 border-b border-slate-900/10 bg-slate-200">
+                                {{-- Gambar dari pangkalan data, fallback ke gambar lalai jika tiada --}}
+                                <img class="h-full w-full object-cover transform group-hover:scale-105 transition-all duration-500" 
+                                     src="{{ $fasiliti->gambar ? asset('images/fasiliti/' . $fasiliti->gambar) : 'https://images.unsplash.com/photo-1516280440502-a16f6b0fbe63?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80' }}" 
+                                     alt="{{ $fasiliti->nama_kab }}">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                                <span class="absolute top-4 right-4 px-3 py-1 bg-amber-500 text-white text-[10px] font-black uppercase tracking-wider rounded-lg shadow">Peralatan</span>
+                            </div>
+                            <div class="p-6">
+                                <h4 class="text-xl font-black text-slate-800 group-hover:text-amber-600 transition-colors duration-300 uppercase">{{ $fasiliti->nama_kab }}</h4>
+                                <p class="text-xs text-slate-600 font-semibold mt-2 leading-relaxed">{{ $fasiliti->deskripsi }}</p>
+                            </div>
                         </div>
-                        <div class="p-6">
-                            <h4 class="text-xl font-black text-slate-800 group-hover:text-amber-600 transition-colors duration-300 uppercase">Set PA System & Mikrofon</h4>
-                            <p class="text-xs text-slate-600 font-semibold mt-2 leading-relaxed">Set pembesar suara akustik mudah alih berkualiti tinggi beserta mikrofon tanpa wayar (wireless) untuk kegunaan acara kolej.</p>
-                        </div>
-                    </div>
-                    <div class="p-6 pt-0">
-                        <a href="{{ route('bookings.create', ['kab_id' => 4]) }}" class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase tracking-widest rounded-xl shadow-md transition duration-150">
-                            ⚡ Pilih & Tempah Peralatan
-                        </a>
-                    </div>
-                </div>
-
-                {{-- KAD 2: KANOPI --}}
-                <div class="group bg-[#fbf9f4]/80 backdrop-blur-md border border-white/40 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] rounded-3xl overflow-hidden flex flex-col justify-between transform hover:-translate-y-2 transition-all duration-300">
-                    <div>
-                        <div class="overflow-hidden relative h-48 border-b border-slate-900/10">
-                            <img class="h-full w-full object-cover transform group-hover:scale-105 transition-all duration-500" src="https://images.unsplash.com/photo-1561489413-985b06da5bee?q=80&w=600" alt="Kanopi">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-                            <span class="absolute top-4 right-4 px-3 py-1 bg-amber-500 text-white text-[10px] font-black uppercase tracking-wider rounded-lg shadow">Struktur Luar</span>
-                        </div>
-                        <div class="p-6">
-                            <h4 class="text-xl font-black text-slate-800 group-hover:text-amber-600 transition-colors duration-300 uppercase">Kanopi / Khemah Piramid</h4>
-                            <p class="text-xs text-slate-600 font-semibold mt-2 leading-relaxed">Khemah kanopi kukuh saiz standard 20x20 kaki, amat ideal untuk aktiviti jualan mega, pesta sukan, mahupun pameran terbuka luar dewan.</p>
+                        <div class="p-6 pt-0">
+                            @if($fasiliti->status == 'available')
+                                <a href="{{ route('bookings.create', ['kab_id' => $fasiliti->id]) }}" class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase tracking-widest rounded-xl shadow-md transition duration-150">
+                                    ⚡ Pilih & Tempah Peralatan
+                                </a>
+                            @else
+                                <button class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-slate-400 text-white font-black text-xs uppercase tracking-widest rounded-xl shadow-inner cursor-not-allowed" disabled>
+                                    ⛔ Tidak Tersedia
+                                </button>
+                            @endif
                         </div>
                     </div>
-                    <div class="p-6 pt-0">
-                        <a href="{{ route('bookings.create', ['kab_id' => 5]) }}" class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase tracking-widest rounded-xl shadow-md transition duration-150">
-                            ⚡ Pilih & Tempah Peralatan
-                        </a>
-                    </div>
-                </div>
-
-                {{-- KAD 3: MEJA & KERUSI --}}
-                <div class="group bg-[#fbf9f4]/80 backdrop-blur-md border border-white/40 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] rounded-3xl overflow-hidden flex flex-col justify-between transform hover:-translate-y-2 transition-all duration-300">
-                    <div>
-                        <div class="overflow-hidden relative h-48 border-b border-slate-900/10">
-                            <img class="h-full w-full object-cover transform group-hover:scale-105 transition-all duration-500" src="https://images.unsplash.com/photo-1517502884422-41eaaced0168?q=80&w=600" alt="Meja Kerusi">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-                            <span class="absolute top-4 right-4 px-3 py-1 bg-amber-500 text-white text-[10px] font-black uppercase tracking-wider rounded-lg shadow">Kelengkapan Asas</span>
+                @empty
+                    {{-- Mesej jika tiada peralatan didaftarkan dalam sistem --}}
+                    <div class="col-span-full py-16 text-center bg-white/50 backdrop-blur-sm rounded-3xl border border-white/60 shadow-sm">
+                        <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-slate-200 text-slate-500 mb-5 shadow-inner">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                            </svg>
                         </div>
-                        <div class="p-6">
-                            <h4 class="text-xl font-black text-slate-800 group-hover:text-amber-600 transition-colors duration-300 uppercase">Set Meja Lipat & Kerusi Plastik</h4>
-                            <p class="text-xs text-slate-600 font-semibold mt-2 leading-relaxed">Logistik tambahan berkapasiti tinggi yang merangkumi meja banquet lipat dan kerusi plastik untuk kaunter pendaftaran atau tetamu.</p>
-                        </div>
+                        <h3 class="text-xl font-black text-slate-900 uppercase tracking-wide">Tiada Peralatan Direkodkan</h3>
+                        <p class="text-sm text-slate-600 mt-2 font-medium max-w-md mx-auto leading-relaxed">Sistem belum mempunyai data logistik. Sila minta pihak pentadbir Kolej Aminuddin Baki untuk menambah senarai peralatan baharu.</p>
                     </div>
-                    <div class="p-6 pt-0">
-                        <a href="{{ route('bookings.create', ['kab_id' => 6]) }}" class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase tracking-widest rounded-xl shadow-md transition duration-150">
-                            ⚡ Pilih & Tempah Peralatan
-                        </a>
-                    </div>
-                </div>
+                @endforelse
 
             </div>
 

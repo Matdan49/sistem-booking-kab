@@ -55,6 +55,15 @@
                             </select>
                         </div>
 
+                        {{-- RUANGAN STATUS BAHARU --}}
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Status Ketersediaan</label>
+                            <select name="status" required class="w-full text-sm px-4 py-2.5 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-blue-500">
+                                <option value="available">✅ Tersedia (Boleh Ditempah)</option>
+                                <option value="maintenance">⛔ Sedang Diselenggara (Disekat)</option>
+                            </select>
+                        </div>
+
                         <div class="mt-4">
                             <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Muat Naik Gambar Fasiliti</label>
                             <input type="file" name="gambar" id="gambar" accept="image/*" class="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
@@ -78,7 +87,7 @@
                                 <tr class="bg-gray-50 text-xs font-semibold text-gray-500 uppercase border-b border-gray-100">
                                     <th class="p-4">Gambar</th>
                                     <th class="p-4">Maklumat Fasiliti</th>
-                                    <th class="p-4">Kategori</th>
+                                    <th class="p-4">Kategori & Status</th>
                                     <th class="p-4 text-center">Tindakan</th>
                                 </tr>
                             </thead>
@@ -94,17 +103,36 @@
                                         </td>
                                         <td class="p-4">
                                             <div class="font-bold text-gray-900">{{ $item->nama_kab }}</div>
-                                            <div class="text-xs text-gray-400">Kod: {{ $item->no_kab ?? 'N/A' }}</div>
+                                            <div class="text-xs text-gray-400">
+                                                Kod: 
+                                                @if($item->no_kab)
+                                                    {{ $item->no_kab }}
+                                                @else
+                                                    Tiada
+                                                @endif
+                                            </div>
                                         </td>
                                         <td class="p-4">
-                                            @if($item->kategori === 'tempat')
-                                                <span class="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-md text-xs font-semibold">📍 Tempat</span>
+                                            @if($item->kategori === "tempat")
+                                                <span class="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-md text-xs font-semibold inline-block mb-2">📍 Tempat</span>
                                             @else
-                                                <span class="px-2.5 py-1 bg-amber-50 text-amber-700 rounded-md text-xs font-semibold">📦 Peralatan</span>
+                                                <span class="px-2.5 py-1 bg-amber-50 text-amber-700 rounded-md text-xs font-semibold inline-block mb-2">📦 Peralatan</span>
                                             @endif
+                                            
+                                            {{-- PAPARAN STATUS BAHARU --}}
+                                            <div class="mt-1">
+                                                @if($item->status === 'available')
+                                                    <span class="px-2.5 py-1 bg-green-50 text-green-700 rounded-md text-[10px] font-bold border border-green-200">✅ Tersedia</span>
+                                                @else
+                                                    <span class="px-2.5 py-1 bg-red-50 text-red-700 rounded-md text-[10px] font-bold border border-red-200">⛔ Diselenggara</span>
+                                                @endif
+                                            </div>
                                         </td>
                                         <td class="p-4 text-center">
-                                            <form action="{{ route('admin.fasiliti.delete', $item->id) }}" method="POST" onsubmit="return confirm('Adakah anda pasti mahu memadam fasiliti ini? Gambar juga akan dibuang.');" class="inline-block">
+                                            <a href="{{ route('admin.fasiliti.edit', $item->id) }}" class="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-xl text-xs font-bold transition mr-2">
+    ✏️ Edit
+</a>
+                                            <form action="{{ route('admin.fasiliti.delete', $item->id) }}" method="POST" onsubmit="return confirm(&quot;Adakah anda pasti mahu memadam fasiliti ini? Gambar juga akan dibuang.&quot;);" class="inline-block">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl text-xs font-bold transition">

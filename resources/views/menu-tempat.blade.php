@@ -144,68 +144,52 @@
                 </span>
             </div>
 
-            {{-- GRID TIGA KAD NEW WARM SAND STYLE --}}
+            {{-- GRID KAD NEW WARM SAND STYLE (KINI DINAMIK) --}}
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 
-                {{-- KAD 1: GELANGGANG SERBAGUNA --}}
-                <div class="glass-card-sand rounded-[2rem] overflow-hidden flex flex-col justify-between group shadow-[0_30px_60px_-15px_rgba(0,0,0,0.2)] hover:shadow-[0_30px_50px_rgba(242,140,24,0.15)]">
-                    <div>
-                        <div class="overflow-hidden relative h-48 m-3 rounded-[1.5rem] shadow-inner">
-                            <img class="h-full w-full object-cover transform group-hover:scale-105 transition-all duration-500" src="https://images.unsplash.com/photo-1544698310-74ea9d1c8258?q=80&w=600" alt="Gelanggang KAB">
-                            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/50 to-transparent"></div>
-                            <span class="absolute top-3 right-3 px-3 py-1 bg-amber-500 text-slate-950 text-[9px] font-black uppercase tracking-wider rounded-lg shadow">Sukan & Rekreasi</span>
+                @forelse($senarai_tempat as $fasiliti)
+                    <div class="glass-card-sand rounded-[2rem] overflow-hidden flex flex-col justify-between group shadow-[0_30px_60px_-15px_rgba(0,0,0,0.2)] hover:shadow-[0_30px_50px_rgba(242,140,24,0.15)]">
+                        <div>
+                            <div class="overflow-hidden relative h-48 m-3 rounded-[1.5rem] shadow-inner">
+                                {{-- Gambar: Jika admin upload gambar, guna gambar tersebut. Jika tidak, guna gambar Unsplash lalai --}}
+                                <img class="h-full w-full object-cover transform group-hover:scale-105 transition-all duration-500" 
+                                     src="{{ $fasiliti->gambar ? asset('images/fasiliti/' . $fasiliti->gambar) : 'https://images.unsplash.com/photo-1544698310-74ea9d1c8258?q=80&w=600' }}" 
+                                     alt="{{ $fasiliti->nama_kab }}">
+                                <div class="absolute inset-0 bg-gradient-to-t from-slate-950/50 to-transparent"></div>
+                                <span class="absolute top-3 right-3 px-3 py-1 bg-amber-500 text-slate-950 text-[9px] font-black uppercase tracking-wider rounded-lg shadow">Tempat</span>
+                            </div>
+                            <div class="p-6 pt-2">
+                                {{-- Nama & Deskripsi ditarik dari Database --}}
+                                <h4 class="text-xl font-black text-slate-950 uppercase tracking-tight group-hover:text-amber-600 transition-colors duration-200">{{ $fasiliti->nama_kab }}</h4>
+                                <p class="text-xs text-slate-700 font-semibold mt-2.5 leading-relaxed">{{ $fasiliti->deskripsi }}</p>
+                            </div>
                         </div>
-                        <div class="p-6 pt-2">
-                            <h4 class="text-xl font-black text-slate-950 uppercase tracking-tight group-hover:text-amber-600 transition-colors duration-200">Gelanggang Serbaguna</h4>
-                            <p class="text-xs text-slate-700 font-semibold mt-2.5 leading-relaxed">Hab sukan komuniti serbaguna Kolej KAB: Menyokong penuh pengurusan aktiviti Futsal, Badminton, Bola Tampar, serta latihan berkala Netball.</p>
-                        </div>
-                    </div>
-                    <div class="p-6 pt-0">
-                        <a href="{{ route('bookings.create', ['kab_id' => 1]) }}" class="w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 bg-slate-900 hover:bg-slate-800 text-amber-400 font-black text-xs uppercase tracking-widest rounded-xl shadow-md transition duration-200">
-                            ⚡ Pilih & Tempah Sekarang
-                        </a>
-                    </div>
-                </div>
-
-                {{-- KAD 2: SURAU AL-IMAN --}}
-                <div class="glass-card-sand rounded-[2rem] overflow-hidden flex flex-col justify-between group shadow-[0_30px_60px_-15px_rgba(0,0,0,0.2)] hover:shadow-[0_30px_50px_rgba(242,140,24,0.15)]">
-                    <div>
-                        <div class="overflow-hidden relative h-48 m-3 rounded-[1.5rem] shadow-inner">
-                            <img class="h-full w-full object-cover transform group-hover:scale-105 transition-all duration-500" src="https://images.unsplash.com/photo-1597935258735-e254c1839512?q=80&w=600" alt="Surau KAB">
-                            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/50 to-transparent"></div>
-                            <span class="absolute top-3 right-3 px-3 py-1 bg-amber-500 text-slate-950 text-[9px] font-black uppercase tracking-wider rounded-lg shadow">Kerohanian</span>
-                        </div>
-                        <div class="p-6 pt-2">
-                            <h4 class="text-xl font-black text-slate-950 uppercase tracking-tight group-hover:text-amber-600 transition-colors duration-200">Surau Al-Iman KAB</h4>
-                            <p class="text-xs text-slate-700 font-semibold mt-2.5 leading-relaxed">Sektor pengurusan ruang ibadah kondusif: Disediakan khas untuk penganjuran solat berjemaah, majlis bacaan yasin, ceramah khas, dan usrah mahasiswa.</p>
+                        
+                        <div class="p-6 pt-0">
+                            {{-- Logik Butang: Semak Status Fasiliti --}}
+                            @if($fasiliti->status == 'available')
+                                <a href="{{ route('bookings.create', ['kab_id' => $fasiliti->id]) }}" class="w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 bg-slate-900 hover:bg-slate-800 text-amber-400 font-black text-xs uppercase tracking-widest rounded-xl shadow-md transition duration-200">
+                                    ⚡ Pilih & Tempah Sekarang
+                                </a>
+                            @else
+                                <button class="w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 bg-slate-400 text-slate-100 font-black text-xs uppercase tracking-widest rounded-xl shadow-md cursor-not-allowed" disabled>
+                                    ⛔ Sedang Diselenggara
+                                </button>
+                            @endif
                         </div>
                     </div>
-                    <div class="p-6 pt-0">
-                        <a href="{{ route('bookings.create', ['kab_id' => 2]) }}" class="w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 bg-slate-900 hover:bg-slate-800 text-amber-400 font-black text-xs uppercase tracking-widest rounded-xl shadow-md transition duration-200">
-                            ⚡ Pilih & Tempah Sekarang
-                        </a>
-                    </div>
-                </div>
-
-                {{-- KAD 3: DEWAN UTAMA --}}
-                <div class="glass-card-sand rounded-[2rem] overflow-hidden flex flex-col justify-between group shadow-[0_30px_60px_-15px_rgba(0,0,0,0.2)] hover:shadow-[0_30px_50px_rgba(242,140,24,0.15)]">
-                    <div>
-                        <div class="overflow-hidden relative h-48 m-3 rounded-[1.5rem] shadow-inner">
-                            <img class="h-full w-full object-cover transform group-hover:scale-105 transition-all duration-500" src="https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=600" alt="Dewan KAB">
-                            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/50 to-transparent"></div>
-                            <span class="absolute top-3 right-3 px-3 py-1 bg-amber-500 text-slate-950 text-[9px] font-black uppercase tracking-wider rounded-lg shadow">Formal / Rasmi</span>
+                @empty
+                    {{-- Paparan jika database kosong --}}
+                    <div class="col-span-full py-12 text-center">
+                        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-200 text-slate-400 mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                            </svg>
                         </div>
-                        <div class="p-6 pt-2">
-                            <h4 class="text-xl font-black text-slate-950 uppercase tracking-tight group-hover:text-amber-600 transition-colors duration-200">Dewan Utama KAB</h4>
-                            <p class="text-xs text-slate-700 font-semibold mt-2.5 leading-relaxed">Infrastruktur perdana acara skala besar: Direka eksklusif bagi kelancaran majlis makan malam korporat, perhimpunan rasmi kolej, dan seminar mega.</p>
-                        </div>
+                        <h3 class="text-lg font-black text-slate-900 uppercase">Tiada Fasiliti Ditemui</h3>
+                        <p class="text-sm text-slate-600 mt-1 font-medium">Pihak pentadbir belum memasukkan sebarang senarai tempat buat masa ini.</p>
                     </div>
-                    <div class="p-6 pt-0">
-                        <a href="{{ route('bookings.create', ['kab_id' => 3]) }}" class="w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 bg-slate-900 hover:bg-slate-800 text-amber-400 font-black text-xs uppercase tracking-widest rounded-xl shadow-md transition duration-200">
-                            ⚡ Pilih & Tempah Sekarang
-                        </a>
-                    </div>
-                </div>
+                @endforelse
 
             </div>
 
