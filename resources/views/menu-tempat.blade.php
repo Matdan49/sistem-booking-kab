@@ -169,11 +169,13 @@
                             {{-- Logik Butang: Semak Status Fasiliti --}}
                             @if($fasiliti->status == 'available')
                                 <a href="{{ route('bookings.create', ['kab_id' => $fasiliti->id]) }}" class="w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 bg-slate-900 hover:bg-slate-800 text-amber-400 font-black text-xs uppercase tracking-widest rounded-xl shadow-md transition duration-200">
-                                    ⚡ Pilih & Tempah Sekarang
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                                    Pilih & Tempah Sekarang
                                 </a>
                             @else
                                 <button class="w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 bg-slate-400 text-slate-100 font-black text-xs uppercase tracking-widest rounded-xl shadow-md cursor-not-allowed" disabled>
-                                    ⛔ Sedang Diselenggara
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
+                                    Sedang Diselenggara
                                 </button>
                             @endif
                         </div>

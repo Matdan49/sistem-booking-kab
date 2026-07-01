@@ -75,30 +75,52 @@
         </div>
     </x-slot>
 
+    {{-- Mesej Notifikasi Berjaya Padam --}}
+    @if(session('success'))
+        <div class="max-w-7xl mx-auto mt-6 px-4 sm:px-6 lg:px-8 relative z-20">
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-xl relative shadow-sm" role="alert">
+                <span class="block sm:inline font-bold">🎉 {{ session('success') }}</span>
+            </div>
+        </div>
+    @endif
+
     {{-- INTERFACE BASE: GAMBAR LATAR BELAKANG KOLEJ KAB YANG WARM --}}
     <div class="py-12 min-h-screen relative z-10 antialiased bg-cover bg-center bg-no-repeat bg-fixed" 
-         style="background-image: url('https://images.unsplash.com/photo-1607237138185-eedd99615a0f?q=80&w=1920');">
+         style="background-image: url('https://images.unsplash.com/photo-1607237138185-eedd99615a0f?q=80&w=1920'); mt-[-1rem]">
 
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 relative z-20">
             
             {{-- KAD JADUAL UTAMA: ELEGAN GLASSMORPHISM --}}
-            <div class="bg-[#fbf9f4]/80 backdrop-blur-md border border-white/40 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] rounded-3xl p-6 sm:p-8">
+            <div class="bg-[#fbf9f4]/90 backdrop-blur-md border border-white/40 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] rounded-3xl p-6 sm:p-8 mt-2">
                 
-                {{-- INTERNAL HEADLINE JADUAL --}}
-                <div class="mb-6 border-b border-slate-900/10 pb-4 flex flex-col md:flex-row md:items-center justify-between gap-2">
+                {{-- INTERNAL HEADLINE JADUAL & BUTANG BERSIHKAN SEJARAH --}}
+                <div class="mb-6 border-b border-slate-900/10 pb-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
                         <h3 class="text-base font-black text-slate-800 tracking-wide flex items-center gap-2 uppercase">
                             📋 Sejarah Tempahan Fasiliti Kolej
                         </h3>
                         <p class="text-slate-600 text-xs mt-0.5 font-semibold">Senarai di bawah memaparkan status terkini, kelulusan, serta ulasan rasmi daripada pentadbiran kolej.</p>
                     </div>
-                    <span class="text-[10px] font-black bg-slate-900/10 text-slate-800 px-3 py-1.5 rounded-xl border border-white/20 uppercase tracking-wider self-start md:self-center">
-                        Semakan Rekod Rasmi
-                    </span>
+                    
+                    {{-- Butang Padam Sejarah (Hanya muncul jika ada rekod) --}}
+                    @if(count($bookings) > 0)
+                        <form action="{{ route('bookings.clear_history') }}" method="POST" onsubmit="return confirm('AMARAN: Adakah anda pasti? Tindakan ini akan memadam semua sejarah permohonan tempahan anda dari paparan ini secara kekal.');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="px-4 py-2.5 bg-rose-100 text-rose-700 hover:bg-rose-200 hover:text-rose-800 font-black uppercase tracking-widest rounded-xl text-[10px] flex items-center gap-2 transition duration-200 shadow-sm border border-rose-200">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                Bersihkan Sejarah
+                            </button>
+                        </form>
+                    @else
+                        <span class="text-[10px] font-black bg-slate-900/10 text-slate-800 px-3 py-1.5 rounded-xl border border-slate-300 uppercase tracking-wider self-start md:self-center">
+                            Tiada Rekod
+                        </span>
+                    @endif
                 </div>
 
                 {{-- STRUKTUR JADUAL KONTRAST TINGGI --}}
-                <div class="overflow-x-auto rounded-2xl border border-slate-900/10 bg-white/40 backdrop-blur-sm">
+                <div class="overflow-x-auto rounded-2xl border border-slate-900/10 bg-white/50 backdrop-blur-sm">
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="bg-slate-900/5 border-b border-slate-900/10 text-slate-800 text-xs font-black uppercase tracking-wider">
@@ -113,16 +135,30 @@
                         
                         <tbody class="text-slate-800 text-sm divide-y divide-slate-900/10">
                             @forelse($bookings as $booking)
-                                <tr class="hover:bg-white/40 transition duration-150 group">
-                                    {{-- NAMA FASILITI --}}
+                                <tr class="hover:bg-white/60 transition duration-150 group">
+                                    {{-- NAMA FASILITI & HARGA --}}
                                     <td class="p-4 font-black text-slate-900 text-sm group-hover:text-blue-600 transition-colors duration-150">
                                         {{ $booking->nama_kab ?? 'Fasiliti ID: '.$booking->kab_id }}
                                         <div class="text-[10px] text-slate-500 font-semibold mt-1">Kod: {{ $booking->no_kab ?? 'Tiada Kod' }}</div>
+                                        
+                                        {{-- Paparan Caj Bayaran (Jika ada RM5, tunjuk warna oren. Jika Kosong, warna hijau) --}}
+                                        @if(isset($booking->jumlah_bayaran) && $booking->jumlah_bayaran > 0)
+                                            <div class="mt-2 inline-flex items-center gap-1 px-2.5 py-1 bg-amber-100 text-amber-700 border border-amber-200 rounded-lg text-[10px] font-black uppercase tracking-wider">
+                                                💰 RM {{ number_format($booking->jumlah_bayaran, 2) }}
+                                            </div>
+                                        @else
+                                            <div class="mt-2 inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-lg text-[10px] font-black uppercase tracking-wider">
+                                                🆓 Percuma
+                                            </div>
+                                        @endif
                                     </td>
                                     
                                     {{-- TARIKH GUNA --}}
                                     <td class="p-4 whitespace-nowrap text-xs font-extrabold text-blue-600">
-                                        {{ \Carbon\Carbon::parse($booking->tarikh_guna)->format('d M Y') }}
+                                        {{ \Carbon\Carbon::parse($booking->tarikh_mula)->format('d M Y') }} 
+                                            @if($booking->tarikh_mula != $booking->tarikh_tamat)
+                                                - {{ \Carbon\Carbon::parse($booking->tarikh_tamat)->format('d M Y') }}
+                                            @endif
                                     </td>
                                     
                                     {{-- MASA SESI --}}
@@ -144,7 +180,7 @@
                                         @elseif($booking->status_kelulusan === 'lulus_muktamad')
                                             <div class="flex flex-col items-start gap-2">
                                                 <span class="px-3 py-1.5 bg-emerald-500 text-white rounded-xl text-xs font-black uppercase tracking-wider inline-block shadow-sm">Lulus Muktamad</span>
-                                                {{-- Butang Cetak PDF Diletakkan di Bawah Lencana Lulus --}}
+                                                {{-- Butang Cetak PDF --}}
                                                 <a href="{{ route('bookings.pdf', $booking->id) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-red-600 to-rose-600 hover:brightness-110 text-white text-[10px] font-black uppercase tracking-wider rounded-lg shadow-md transition duration-150">
                                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                                         <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
@@ -172,7 +208,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="p-16 text-center text-slate-500 font-bold tracking-wide bg-white/20">
+                                    <td colspan="6" class="p-16 text-center text-slate-500 font-bold tracking-wide bg-white/40">
                                         ℹ️ Tiada sebarang rekod permohonan tempahan ditemui dalam sistem.
                                     </td>
                                 </tr>

@@ -101,7 +101,8 @@
             {{-- NAVIGATION BUTTONS --}}
             <div class="flex items-center gap-3 w-full sm:w-auto">
                 <a href="{{ route('bookings.status') }}" class="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-amber-500 to-orange-600 hover:brightness-110 text-white text-xs font-black tracking-wider uppercase rounded-xl shadow-lg shadow-orange-500/20 transition duration-150">
-                    📋 Semak Status Tempahan
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
+                    Semak Status Tempahan
                 </a>
 
                 <a href="{{ route('bookings.create') }}" class="flex items-center gap-2 px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-black tracking-wider uppercase rounded-xl border border-slate-700 shadow transition duration-150">
@@ -191,7 +192,8 @@
                 <div class="lg:col-span-1 flex flex-col gap-6">
                     <div class="bg-[#fbf9f4]/80 backdrop-blur-md p-6 rounded-[2rem] border border-white/40 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.3)] text-left">
                         <h5 class="text-slate-900 font-black text-xs tracking-wider uppercase flex items-center gap-2 mb-4">
-                            ⚡ PROSEDUR ALUR SISTEM
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                            PROSEDUR ALUR SISTEM
                         </h5>
                         <ul class="space-y-3.5 text-xs text-slate-700 font-semibold">
                             <li class="flex items-start gap-3">
@@ -209,6 +211,13 @@
                             <li class="flex items-start gap-3">
                                 <span class="w-5 h-5 rounded-lg bg-slate-900 text-amber-400 border border-slate-700 flex items-center justify-center font-black text-[10px] shrink-0 shadow-sm">04</span>
                                 <span class="leading-relaxed">Pantau kelulusan menerusi sub-menu Semak Status di bahagian atas.</span>
+                            </li>
+                            {{-- Poin ke-5 (Khas Caj Harga) --}}
+                            <li class="flex items-start gap-3">
+                                <span class="w-5 h-5 rounded-lg bg-amber-100 text-amber-700 border border-amber-300 flex items-center justify-center font-black text-[10px] shrink-0 shadow-sm">💰</span>
+                                <span class="leading-relaxed">
+                                    <strong class="text-slate-900">Kadar Bayaran:</strong> Percuma untuk Pelajar UPSI. Caj penyelenggaraan <strong>RM5.00/hari</strong> dikenakan khusus untuk kategori Staf / Bukan Pelajar.
+                                </span>
                             </li>
                         </ul>
                     </div>

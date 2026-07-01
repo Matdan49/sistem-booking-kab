@@ -65,63 +65,91 @@ class BookingController extends Controller
     /**
      * Memproses simpanan borang tempahan baru daripada pemohon.
      */
+    /**
+     * Memproses simpanan borang tempahan baru daripada pemohon (VERSI FLATPICKR RANGE).
+     */
+/**
+     * Memproses simpanan borang tempahan baru daripada pemohon (TERMASUK KIRAAN RM5).
+     */
     public function store(Request $request)
     {
         // Hadkan fungsi ini hanya untuk kumpulan pemohon sahaja
         if (Auth::user()->role !== 'student' && Auth::user()->role !== 'non-student') {
-            return redirect()->route('dashboard')->with('error', 'Hanya pemohon (student/non-student) sahaja dibenarkan membuat tempahan.');
+            return redirect()->route('dashboard')->with('error', 'Hanya pemohon sahaja dibenarkan membuat tempahan.');
         }
 
+        // 1. Validasi Input Baharu
         $request->validate([
             'kab_id' => 'required',
-            'tarikh_guna' => 'required|date',
+            'tarikh_mula' => 'required|date',
+            'tarikh_tamat' => 'required|date|after_or_equal:tarikh_mula',
             'masa_mula' => 'required',
             'masa_tamat' => 'required',
             'tujuan_tempahan' => 'required|string|max:500',
         ]);
 
-        // 💡 MOD TRIAL: Memastikan ID ditukar ke integer secara selamat (default ke 1 jika kosong)
         $kabId = intval($request->kab_id) > 0 ? intval($request->kab_id) : 1;
-        
-        $tarikhGuna = $request->tarikh_guna;
-        $masaMula   = $request->masa_mula;
-        $masaTamat  = $request->masa_tamat;
 
-        // 🔍 1. SEMAKAN BERTINDIH: Cari jika slot waktu ini sudah diambil oleh orang lain
+        // 2. Sediakan Format 'DateTime' untuk Semakan Pertindihan Pintar
+        $newStart = $request->tarikh_mula . ' ' . $request->masa_mula . ':00';
+        $newEnd = $request->tarikh_tamat . ' ' . $request->masa_tamat . ':00';
+
+        // 3. Logik Pertindihan (Advanced Range Overlap Checker)
         $isOverlap = DB::table('bookings')
             ->where('kab_id', $kabId)
-            ->where('tarikh_guna', $tarikhGuna)
-            ->where(function ($query) use ($masaMula, $masaTamat) {
-                $query->where(function ($q) use ($masaMula, $masaTamat) {
-                    $q->where('masa_mula', '<', $masaTamat)
-                      ->where('masa_tamat', '>', $masaMula);
-                });
-            })
-            // Hanya sekat jika permohonan sedia ada berstatus 'pending' atau 'Lulus' (Suaikan ejaan mengikut sistem anda)
-            ->whereIn('status_kelulusan', ['pending', 'Lulus', 'Dalam Proses'])
+            ->whereIn('status_kelulusan', ['pending', 'disokong_pejabat', 'lulus_muktamad'])
+            ->whereRaw("CONCAT(tarikh_mula, ' ', masa_mula) < ?", [$newEnd])
+            ->whereRaw("CONCAT(tarikh_tamat, ' ', masa_tamat) > ?", [$newStart])
             ->exists();
 
-        // ❌ 2. Jika bertindih, sekat kemasukan dan hantar ralat balik ke borang
+        // 4. Jika bertindih, sekat kemasukan
         if ($isOverlap) {
             return redirect()->back()
                 ->withInput()
-                ->withErrors(['booking_conflict' => 'Maaf, fasiliti ini telah ditempah pada tarikh dan masa yang dipilih. Sila pilih slot waktu lain.']);
+                ->withErrors(['booking_conflict' => 'Maaf, slot tarikh dan masa ini bertindih dengan tempahan lain. Sila pilih slot yang berbeza.']);
         }
 
-        // ✅ 3. Jika tiada pertindihan, terus masukkan data baru ke database seperti biasa
+       // 🚀 5. PENGIRAAN HARGA RM5/HARI (Berdasarkan Lingkungan 24 Jam)
+        $jumlahBayaran = 0.00;
+        
+        if (Auth::user()->role === 'non-student') {
+            // Gabungkan tarikh dan masa untuk pengiraan tempoh yang sangat tepat
+            $mula = \Carbon\Carbon::parse($request->tarikh_mula . ' ' . $request->masa_mula);
+            $tamat = \Carbon\Carbon::parse($request->tarikh_tamat . ' ' . $request->masa_tamat);
+            
+            // Kira perbezaan dalam bentuk minit (paling tepat)
+            $jumlahMinit = $mula->diffInMinutes($tamat);
+            
+            // Bahagikan dengan 1440 minit (bersamaan 24 Jam) dan bundarkan ke atas (ceil)
+            // Contoh 1: 10 Jam (600 minit) / 1440 = 0.41 -> ceil(0.41) = 1 Hari
+            // Contoh 2: 26 Jam (1560 minit) / 1440 = 1.08 -> ceil(1.08) = 2 Hari
+            $bilHari = ceil($jumlahMinit / 1440);
+            
+            // Keselamatan: Tetapkan sekurang-kurangnya 1 hari (RM5) walaupun tempah cuma 30 minit
+            if ($bilHari < 1) {
+                $bilHari = 1;
+            }
+            
+            // Darab dengan kadar RM 5.00
+            $jumlahBayaran = $bilHari * 5.00;
+        }
+
+        // 6. Simpan ke database
         DB::table('bookings')->insert([
             'user_id' => Auth::id(),
             'kab_id' => $kabId,
-            'tarikh_guna' => $tarikhGuna,
-            'masa_mula' => $masaMula,
-            'masa_tamat' => $masaTamat,
+            'tarikh_mula' => $request->tarikh_mula,
+            'tarikh_tamat' => $request->tarikh_tamat,
+            'masa_mula' => $request->masa_mula,
+            'masa_tamat' => $request->masa_tamat,
             'tujuan_tempahan' => $request->tujuan_tempahan,
-            'status_kelulusan' => 'pending', // Status awal wajib huruf kecil
+            'jumlah_bayaran' => $jumlahBayaran, // <--- MASUKKAN KE DALAM DATABASE
+            'status_kelulusan' => 'pending', 
             'created_at' => now(),
             'updated_at' => now(),
         ]);
 
-        return redirect()->route('dashboard')->with('success', 'Tahniah! Permohonan tempahan fasiliti kolej anda telah berjaya dihantar.');
+        return redirect()->route('bookings.status')->with('success', 'Tahniah! Permohonan tempahan fasiliti kolej anda telah berjaya dihantar.');
     }
     
     /**
@@ -205,8 +233,8 @@ class BookingController extends Controller
         $booking->nama_kab = $kab ? $kab->nama_kab : 'Fasiliti ID: ' . $booking->kab_id;
 
         // 5. SEMAKAN KESELAMATAN: Pastikan data dihantar (Jika masih kosong, ia akan sekat di sini)
-        if (empty($booking->tarikh_guna)) {
-            return "Ralat: Data tempahan didapati kosong di dalam pangkalan data.";
+        if (empty($booking->tarikh_mula)) {
+            return "Ralat: Data tempahan didapati kosong atau menggunakan format lama di dalam pangkalan data.";
         }
 
         // 6. Jana PDF berpandukan fail reka bentuk surat
@@ -311,7 +339,7 @@ class BookingController extends Controller
             'no_kab' => 'nullable|string|max:50',
             'kategori' => 'required|in:tempat,peralatan',
             'status' => 'nullable|in:available,maintenance', // ✅ TAMBAHAN BARU
-            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120', // Had saiz fail 5MB
         ]);
 
         $fasiliti = DB::table('kabs')->where('id', $id)->first();
@@ -381,4 +409,38 @@ class BookingController extends Controller
             return view('admin.fasiliti-edit', compact('fasiliti'));
             
         }
+        /**
+     * FUNGSI AJAX: Ambil senarai tarikh yang telah ditempah untuk fasiliti tertentu.
+     */
+        public function getBookedDates($kab_id)
+        {
+            // Cari semua tempahan untuk fasiliti ini yang belum ditolak
+            $bookings = DB::table('bookings')
+                ->where('kab_id', $kab_id)
+                ->whereIn('status_kelulusan', ['pending', 'disokong_pejabat', 'lulus_muktamad'])
+                ->get(['tarikh_mula', 'tarikh_tamat']);
+
+            $disabledDates = [];
+            
+            foreach ($bookings as $booking) {
+                $disabledDates[] = [
+                    'from' => $booking->tarikh_mula,
+                    // Jika tarikh_tamat null/kosong, kita anggap ia sama dengan tarikh mula
+                    'to' => $booking->tarikh_tamat ?? $booking->tarikh_mula 
+                ];
+            }
+
+            // Hantar balik data dalam format JSON supaya boleh dibaca oleh JavaScript (Flatpickr)
+            return response()->json($disabledDates);
+        }
+        /**
+     * 🗑️ FUNGSI KLIEN: Bersihkan Sejarah Tempahan
+     */
+    public function clearHistory()
+    {
+        // Padam semua rekod tempahan milik pengguna yang sedang log masuk
+        DB::table('bookings')->where('user_id', Auth::id())->delete();
+        
+        return redirect()->back()->with('success', 'Semua sejarah tempahan anda telah berjaya dipadam.');
+    }
     }

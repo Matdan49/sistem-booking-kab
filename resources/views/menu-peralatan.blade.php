@@ -110,11 +110,13 @@
                         <div class="p-6 pt-0">
                             @if($fasiliti->status == 'available')
                                 <a href="{{ route('bookings.create', ['kab_id' => $fasiliti->id]) }}" class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase tracking-widest rounded-xl shadow-md transition duration-150">
-                                    ⚡ Pilih & Tempah Peralatan
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                                    Pilih & Tempah Peralatan
                                 </a>
                             @else
                                 <button class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-slate-400 text-white font-black text-xs uppercase tracking-widest rounded-xl shadow-inner cursor-not-allowed" disabled>
-                                    ⛔ Tidak Tersedia
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
+                                    Tidak Tersedia
                                 </button>
                             @endif
                         </div>

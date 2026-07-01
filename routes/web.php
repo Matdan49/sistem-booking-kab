@@ -18,6 +18,7 @@ Route::get('/login/quick/{role}', [BookingController::class, 'quickLogin'])->nam
 Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/dashboard', [BookingController::class, 'index'])->name('dashboard');
+    Route::delete('/bookings/clear-history', [BookingController::class, 'clearHistory'])->name('bookings.clear_history');
 
     // Pengurusan Profil Pengguna
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -43,11 +44,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return view('menu-peralatan', compact('senarai_peralatan')); 
     })->name('fasiliti.peralatan');
 
-    // 👇 INI ADALAH 4 BARIS YANG HILANG SEBELUM INI
+   // 👇 INI ADALAH 4 BARIS YANG HILANG SEBELUM INI
     Route::get('/bookings/create', [BookingController::class, 'create'])->name('bookings.create');
     Route::post('/bookings/store', [BookingController::class, 'store'])->name('bookings.store');
     Route::get('/bookings/status', [BookingController::class, 'status'])->name('bookings.status');
     Route::get('/bookings/{id}/pdf', [BookingController::class, 'downloadPDF'])->name('bookings.pdf');
+    
+    // 🚀 TAMBAH BARIS INI: Route untuk AJAX Flatpickr (Semak ketersediaan tarikh)
+    Route::get('/bookings/booked-dates/{kab_id}', [BookingController::class, 'getBookedDates'])->name('bookings.booked_dates');
 
     // ======================================================================
     // 🏛️ LALUAN ADMIN (KHAS UNTUK PEJABAT & PENGETUA SAHAJA)
