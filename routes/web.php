@@ -4,11 +4,12 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\BookingController;
 use Illuminate\Support\Facades\Route;
 
-// Laman utama terus tukar pergi ke Login
+// Paparkan halaman Landing Page (Marketing)
 Route::get('/', function () {
-    return redirect()->route('login');
+    return view('welcome');
 });
-
+Route::view('/about', 'about')->name('about');
+Route::view('/contact', 'contact')->name('contact');
 // 🚀 MOD TRIAL: Laluan Pintas Log Masuk Tanpa Password (Di luar auth)
 Route::get('/login/quick/{role}', [BookingController::class, 'quickLogin'])->name('login.quick');
 
