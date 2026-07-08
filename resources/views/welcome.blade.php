@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!-- Ditambah scroll-smooth di sini -->
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="scroll-smooth">
 <head>
     <meta charset="utf-8">
@@ -15,13 +14,36 @@
         .delay-400 { animation-delay: 400ms; opacity: 0; }
         
         .header-shadow { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+
+        /* Animasi 1: Apungan Warna Biasa */
+        @keyframes blob {
+            0% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(40px, -50px) scale(1.1); }
+            66% { transform: translate(-30px, 20px) scale(0.9); }
+            100% { transform: translate(0px, 0px) scale(1); }
+        }
+        .animate-blob { animation: blob 10s infinite; }
+        .animation-delay-2000 { animation-delay: 2s; }
+        .animation-delay-4000 { animation-delay: 4s; }
+
+        /* ==================================================
+           ANIMASI 2: Efek "Lampu" Bertukar Warna (Glow Light)
+           ================================================== */
+        @keyframes colorShiftingLight {
+            0%   { background-color: #243375; opacity: 0.07; transform: scale(1) translate(-50%, -50%); } /* Cahaya Biru */
+            33%  { background-color: #DE2025; opacity: 0.09; transform: scale(1.2) translate(-40%, -50%); } /* Cahaya Merah */
+            66%  { background-color: #f1c40f; opacity: 0.09; transform: scale(0.9) translate(-60%, -50%); } /* Cahaya Kuning */
+            100% { background-color: #243375; opacity: 0.07; transform: scale(1) translate(-50%, -50%); } /* Balik Biru */
+        }
+        .animate-shifting-light { 
+            animation: colorShiftingLight 15s infinite ease-in-out; 
+            transform-origin: top left;
+        }
     </style>
 </head>
 <body class="antialiased font-sans bg-gray-50 overflow-x-hidden">
 
-    <!-- ==========================================
-         1. STICKY HEADER
-         ========================================== -->
+    <!-- STICKY HEADER -->
     <header class="fixed top-0 left-0 w-full h-20 lg:h-24 bg-white/95 backdrop-blur-md header-shadow z-50 flex items-center justify-between px-6 lg:px-12 transition-all">
         
         <div class="flex items-center gap-3 lg:gap-4">
@@ -31,11 +53,9 @@
         </div>
 
         <nav class="flex gap-4 lg:gap-8 items-center">
-            <!-- Pautan ditukar ke #tentang -->
             <a href="#tentang" class="font-black text-[#243375] hover:text-[#DE2025] hover:scale-105 transition-all duration-300 text-sm lg:text-lg uppercase tracking-wider hidden sm:block">
                 Tentang myKAB
             </a>
-            <!-- Pautan ditukar ke #hubungi -->
             <a href="#hubungi" class="font-black text-[#243375] hover:text-[#DE2025] hover:scale-105 transition-all duration-300 text-sm lg:text-lg uppercase tracking-wider hidden sm:block">
                 Hubungi
             </a>
@@ -54,9 +74,7 @@
         </nav>
     </header>
 
-    <!-- ==========================================
-         2. BAHAGIAN HERO (2 LAJUR)
-         ========================================== -->
+    <!-- BAHAGIAN HERO -->
     <main class="flex w-full h-screen">
         
         <div class="relative w-full lg:w-[55%] h-full bg-cover bg-left flex flex-col justify-center px-10 lg:px-16 pt-20" 
@@ -106,75 +124,88 @@
 
             <img src="{{ asset('images/badge_kab.png') }}" 
                  class="absolute z-20 w-32 drop-shadow-2xl hover:scale-110 transition-transform duration-300" 
-                 style="bottom: 15%; left: 3%;" 
+                 style="bottom: 15%; left: -3%;" 
                  alt="Badge KAB">
         </div>
 
     </main>
 
     <!-- ==========================================
-         3. SEKSYEN TENTANG myKAB
+         SEKSYEN TENTANG myKAB
          ========================================== -->
-    <!-- scroll-mt-24 ditambah supaya Header tak tutup tajuk bila meluncur -->
-    <section id="tentang" class="scroll-mt-24 w-full bg-white py-20 px-8 lg:px-24 border-t border-gray-100">
-        <div class="max-w-5xl mx-auto text-center">
+    <section id="tentang" class="relative scroll-mt-24 w-full bg-white py-24 px-8 lg:px-24 overflow-hidden border-t border-gray-100">
+        
+        <!-- LAMPU UTAMA (Tengah Skrin) - Bertukar Warna -->
+        <div class="absolute top-1/2 left-1/2 w-[600px] h-[600px] rounded-full filter blur-[100px] animate-shifting-light pointer-events-none z-0"></div>
+
+        <!-- Apungan Warna Sisi (Kekal sebagai sokongan lampu) -->
+        <div class="absolute top-0 -left-12 w-72 h-72 bg-[#243375] rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob pointer-events-none"></div>
+        <div class="absolute -bottom-20 left-1/4 w-72 h-72 bg-[#f1c40f] rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-4000 pointer-events-none"></div>
+
+        <div class="relative z-10 max-w-5xl mx-auto text-center">
             <h2 class="text-3xl lg:text-4xl font-extrabold text-[#243375] mb-6 uppercase tracking-wider">
                 Tentang <span class="text-[#DE2025]">myKAB</span>
             </h2>
             <div class="w-24 h-1 bg-[#f1c40f] mx-auto mb-10 rounded-full"></div>
             
-            <p class="text-gray-600 text-lg lg:text-xl leading-relaxed mb-8">
+            <p class="text-gray-700 text-lg lg:text-xl leading-relaxed mb-8">
                 <strong>MYKAB e-Booking</strong> merupakan sebuah sistem inovasi digital yang dibangunkan khas untuk pengurusan fasiliti di <strong>Kolej Aminuddin Baki (KAB)</strong>. Sistem ini mendigitalkan sepenuhnya proses tempahan dewan, bilik mesyuarat, dan peralatan yang sebelum ini menggunakan kaedah borang manual.
             </p>
-            <p class="text-gray-600 text-lg lg:text-xl leading-relaxed">
-                Dengan adanya enjin pencegahan pertindihan masa pintar (*smart anti-clash engine*), warga kolej kini boleh menyemak kekosongan fasiliti secara masa nyata (*real-time*) dan membuat tempahan dengan lebih teratur, pantas, serta telus.
+            <p class="text-gray-700 text-lg lg:text-xl leading-relaxed">
+                Dengan adanya enjin pencegahan pertindihan masa pintar (<i>smart anti-clash engine</i>), warga kolej kini boleh menyemak kekosongan fasiliti secara masa nyata (<i>real-time</i>) dan membuat tempahan dengan lebih teratur, pantas, serta telus.
             </p>
         </div>
     </section>
 
     <!-- ==========================================
-         4. SEKSYEN HUBUNGI KAMI
+         SEKSYEN HUBUNGI KAMI
          ========================================== -->
-    <section id="hubungi" class="scroll-mt-24 w-full bg-gray-50 py-20 px-8 lg:px-24 border-t border-gray-200">
-        <div class="max-w-4xl mx-auto text-center">
+    <section id="hubungi" class="relative scroll-mt-24 w-full bg-gray-50 py-24 px-8 lg:px-24 overflow-hidden border-t border-gray-200">
+        
+        <!-- LAMPU UTAMA (Tengah Skrin) - Bertukar Warna -->
+        <div class="absolute top-1/2 left-1/2 w-[700px] h-[700px] rounded-full filter blur-[120px] animate-shifting-light pointer-events-none z-0" style="animation-delay: 5s;"></div>
+
+        <div class="absolute top-10 right-1/4 w-72 h-72 bg-[#243375] rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000 pointer-events-none"></div>
+
+        <div class="relative z-10 max-w-5xl mx-auto text-center">
             <h2 class="text-3xl lg:text-4xl font-extrabold text-[#243375] mb-6 uppercase tracking-wider">
                 Hubungi Kami
             </h2>
-            <div class="w-24 h-1 bg-[#DE2025] mx-auto mb-12 rounded-full"></div>
+            <div class="w-24 h-1 bg-[#DE2025] mx-auto mb-16 rounded-full"></div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
                 <!-- Alamat -->
-                <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg transition-shadow duration-300">
-                    <div class="w-14 h-14 bg-blue-50 text-[#243375] rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                <div class="bg-white/70 backdrop-blur-lg p-8 rounded-3xl shadow-sm border border-gray-100 hover:shadow-lg hover:-translate-y-2 transition-all duration-300">
+                    <div class="w-16 h-16 bg-blue-50 text-[#243375] rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                     </div>
                     <h3 class="font-bold text-lg text-gray-800 mb-2">Pejabat Pengurusan</h3>
-                    <p class="text-gray-500 text-sm">Kolej Aminuddin Baki,<br>Universiti Pendidikan Sultan Idris,<br>35900 Tanjong Malim, Perak.</p>
+                    <p class="text-gray-600 text-sm leading-relaxed">Kolej Aminuddin Baki,<br>Universiti Pendidikan Sultan Idris,<br>35900 Tanjong Malim, Perak.</p>
                 </div>
 
                 <!-- Telefon -->
-                <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg transition-shadow duration-300">
-                    <div class="w-14 h-14 bg-red-50 text-[#DE2025] rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                <div class="bg-white/70 backdrop-blur-lg p-8 rounded-3xl shadow-sm border border-gray-100 hover:shadow-lg hover:-translate-y-2 transition-all duration-300">
+                    <div class="w-16 h-16 bg-red-50 text-[#DE2025] rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
                     </div>
                     <h3 class="font-bold text-lg text-gray-800 mb-2">Talian Rasmi</h3>
-                    <p class="text-gray-500 text-sm">+605-450 6000<br>(Waktu Pejabat Sahaja)</p>
+                    <p class="text-gray-600 text-sm leading-relaxed">+605-450 6000<br>(Waktu Pejabat Sahaja)</p>
                 </div>
 
                 <!-- Emel -->
-                <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg transition-shadow duration-300">
-                    <div class="w-14 h-14 bg-yellow-50 text-yellow-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                <div class="bg-white/70 backdrop-blur-lg p-8 rounded-3xl shadow-sm border border-gray-100 hover:shadow-lg hover:-translate-y-2 transition-all duration-300">
+                    <div class="w-16 h-16 bg-yellow-50 text-yellow-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                     </div>
                     <h3 class="font-bold text-lg text-gray-800 mb-2">E-Mel Bantuan</h3>
-                    <p class="text-gray-500 text-sm">mykab.admin@upsi.edu.my<br>support@upsi.edu.my</p>
+                    <p class="text-gray-600 text-sm leading-relaxed">mykab.admin@upsi.edu.my<br>support@upsi.edu.my</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Footer Ringkas -->
-    <footer class="bg-[#243375] text-white py-6 text-center text-sm">
+    <!-- Footer -->
+    <footer class="bg-[#243375] text-white py-6 text-center text-sm relative z-20">
         <p>&copy; {{ date('Y') }} Hak Cipta Terpelihara. Kolej Aminuddin Baki, Universiti Pendidikan Sultan Idris.</p>
     </footer>
 
