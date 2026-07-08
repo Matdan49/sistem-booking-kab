@@ -80,20 +80,25 @@
         <div class="relative w-full lg:w-[55%] h-full bg-cover bg-left flex flex-col justify-center px-10 lg:px-16 pt-20" 
              style="background-image: url('{{ asset('images/bg_graduan.png') }}');">
             
-            <div class="absolute inset-0 bg-white/60"></div>
+            <!-- KEMAS KINI 1: Cerahkan sikit background dan letak blur sikit supaya teks depan "pop" -->
+            <div class="absolute inset-0 bg-white/60 backdrop-blur-sm"></div>
 
             <div class="relative z-10">
-                <h1 class="text-[#243375] font-bold tracking-wide leading-[1.1] animate-fade-in-left" 
+                <!-- KEMAS KINI 2: Tambah drop-shadow-md pada tajuk -->
+                <h1 class="text-[#243375] font-bold tracking-wide leading-[1.1] animate-fade-in-left drop-shadow-md" 
                     style="font-size: clamp(2rem, 3vw, 3.2rem);">
                     Urus Tempahan Fasiliti di<br>Kolej Aminuddin Baki
                 </h1>
 
                 <div class="flex items-start mt-8 animate-fade-in-left delay-200">
-                    <span class="text-[#243375] font-black tracking-tighter drop-shadow-md" 
+                    <!-- KEMAS KINI 3: Tukar ke drop-shadow-2xl (bayang paling kuat) untuk huruf M -->
+                    <span class="text-[#243375] font-black tracking-tighter drop-shadow-2xl" 
                           style="font-size: clamp(8rem, 13vw, 15rem); line-height: 0.75; margin-left: -0.5rem;">
                         M
                     </span>
-                    <div class="flex flex-col text-[#DE2025] font-black uppercase ml-2 mt-2" 
+                    
+                    <!-- KEMAS KINI 4: Tambah drop-shadow-md pada teks merah -->
+                    <div class="flex flex-col text-[#DE2025] font-black uppercase ml-2 mt-2 drop-shadow-md" 
                          style="font-size: clamp(1.5rem, 2.5vw, 2.8rem); line-height: 1.05;">
                         <span class="tracking-widest">udah</span>
                         <span class="tracking-widest">urah</span>
@@ -103,11 +108,14 @@
                 </div>
 
                 <div class="mt-12 animate-fade-in-left delay-400">
-                    <p class="text-[#243375] font-semibold text-xl uppercase tracking-wide mb-3">
+                    <p class="text-[#243375] font-semibold text-xl uppercase tracking-wide mb-3 drop-shadow-sm">
                         Tempah Sekarang Dengan
                     </p>
-                    <img src="{{ asset('images/logo_mykab.png') }}" class="h-20 lg:h-24 object-contain" alt="MYKAB Besar">
-                    <p class="text-[#243375] font-bold uppercase tracking-widest mt-1" style="font-size: 0.65rem; margin-left: 2.5rem;">
+                    
+                    <!-- KEMAS KINI 5: Tambah drop-shadow-xl pada logo bawah supaya sangat jelas -->
+                    <img src="{{ asset('images/logo_mykab.png') }}" class="h-20 lg:h-24 object-contain drop-shadow-xl" alt="MYKAB Besar">
+                    
+                    <p class="text-[#243375] font-bold uppercase tracking-widest mt-1 drop-shadow-sm" style="font-size: 0.65rem; margin-left: 2.5rem;">
                         Kolej Aminuddin Baki Booking Facilities System
                     </p>
                 </div>
